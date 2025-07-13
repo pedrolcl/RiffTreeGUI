@@ -9,16 +9,15 @@
     models.
 */
 
-#include "treemodel.h"
-#include "riff.h"
-#include "treeitem.h"
-
-#include <QDebug>
+#include <QApplication>
 #include <QFile>
+#include <QMessageBox>
 #include <QStringList>
 #include <QVariantList>
 
-//using namespace Qt::StringLiterals;
+#include "riff.h"
+#include "treeitem.h"
+#include "treemodel.h"
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent)
@@ -36,20 +35,11 @@ int TreeModel::columnCount(const QModelIndex &parent) const
 
 bool TreeModel::loadData(QFile *riffFile)
 {
-    // QFile::map doesn't allow options like MAP_HUGETLB, MAP_PRIVATE or MAP_LOCKED
-    // but it is more portable between different operating systems than mmap().
-    // Previously, we tried to use MAP_HUGETLB with mmap() syscall but it is only
-    // valid for anonymous memory.
-    m_buffer = riffFile->map(0, riffFile->size());
-    if (m_buffer == NULL) {
-        qWarning() << riffFile->errorString();
-        return false;
-    }
-
     riff::RiffChunk<> *chunk = reinterpret_cast<riff::RiffChunk<> *>(m_buffer);
     if (!chunk->hasTypeRiff()) {
-        qWarning() << riffFile->fileName() << "is not a valid RIFF file";
-        riffFile->unmap(m_buffer);
+        QMessageBox::warning(qApp->activeWindow(),
+                             qApp->applicationName(),
+                             tr("%1 is not a valid RIFF file").arg(riffFile->fileName()));
         return false;
     }
 
@@ -57,7 +47,6 @@ bool TreeModel::loadData(QFile *riffFile)
     traverseRiff(chunk->castTo<riff::RiffList<> >(), rootItem.get());
     endResetModel();
 
-    riffFile->unmap(m_buffer);
     return true;
 }
 
@@ -88,6 +77,16 @@ void TreeModel::traverseRiff(const riff::RiffList<>::Chunk *listChunk, TreeItem 
         }
         child = child->nextChunk();
     }
+}
+
+uint8_t *TreeModel::buffer() const
+{
+    return m_buffer;
+}
+
+void TreeModel::setBuffer(uint8_t *newBuffer)
+{
+    m_buffer = newBuffer;
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const

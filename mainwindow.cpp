@@ -11,7 +11,7 @@
 #include <QMessageBox>
 #include <QScreen>
 
-//using namespace Qt::StringLiterals;
+#include <qhexview/model/buffer/qmemorybuffer.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
@@ -54,26 +54,41 @@ void MainWindow::open()
         QFile file(fileName);
         file.open(QIODevice::ReadOnly);
 
+        // QFile::map doesn't allow options like MAP_HUGETLB, MAP_PRIVATE or MAP_LOCKED
+        // but it is more portable between different operating systems than mmap().
+        // Previously, we tried to use MAP_HUGETLB with mmap() syscall but it is only
+        // valid for anonymous memory.
+        m_buffer = file.map(0, file.size());
+        if (m_buffer == NULL) {
+            QMessageBox::warning(this, qApp->applicationName(), file.errorString());
+            file.close();
+            return;
+        }
+
         delete m_treemodel;
         m_treemodel = new TreeModel(this);
+        m_treemodel->setBuffer(m_buffer);
+
         m_treeview->setModel(m_treemodel);
         m_treeview->setSelectionMode(QAbstractItemView::SingleSelection);
         m_treeview->setColumnWidth(0, 100);
         m_treeview->setColumnWidth(1, 66);
         m_treeview->setColumnWidth(2, 66);
-        bool ok = m_treemodel->loadData(&file);
-        file.close();
 
-        if (ok) {
+        if (m_treemodel->loadData(&file)) {
             if (m_hexdoc) {
                 m_hexdoc->deleteLater();
             }
-            m_hexdoc = QHexDocument::fromMappedFile(fileName, this);
+            m_hexdoc = QHexDocument::fromMemory<QMemoryBuffer>(reinterpret_cast<char *>(m_buffer),
+                                                               file.size());
             m_hexview->setDocument(m_hexdoc);
 
             m_treeview->expandAll();
             m_treeview->resizeColumnToContents(0);
         }
+
+        file.unmap(m_buffer);
+        file.close();
     }
 }
 

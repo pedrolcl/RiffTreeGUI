@@ -37,6 +37,9 @@ public:
 
     bool loadData(QFile *riffFile);
 
+    uint8_t *buffer() const;
+    void setBuffer(uint8_t *newBuffer);
+
 private:
     void traverseRiff(const riff::RiffList<>::Chunk *listChunk, TreeItem *parent);
     uint8_t *m_buffer{nullptr};

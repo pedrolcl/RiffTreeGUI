@@ -40,6 +40,8 @@ private:
     QTreeView *m_treeview;
     QHexView *m_hexview;
 
+    uint8_t *m_buffer{nullptr};
+
     TreeModel *m_treemodel{nullptr};
     QHexDocument *m_hexdoc{nullptr};
 
