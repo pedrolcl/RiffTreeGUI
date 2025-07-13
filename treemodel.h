@@ -35,10 +35,7 @@ public:
     int rowCount(const QModelIndex &parent = {}) const override;
     int columnCount(const QModelIndex &parent = {}) const override;
 
-    bool loadData(QFile *riffFile);
-
-    uint8_t *buffer() const;
-    void setBuffer(uint8_t *newBuffer);
+    bool loadData(uint8_t *buffer, const QString fileName);
 
 private:
     void traverseRiff(const riff::RiffList<>::Chunk *listChunk, TreeItem *parent);

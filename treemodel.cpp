@@ -33,13 +33,14 @@ int TreeModel::columnCount(const QModelIndex &parent) const
     return rootItem->columnCount();
 }
 
-bool TreeModel::loadData(QFile *riffFile)
+bool TreeModel::loadData(uint8_t *buffer, const QString fileName)
 {
+    m_buffer = buffer;
     riff::RiffChunk<> *chunk = reinterpret_cast<riff::RiffChunk<> *>(m_buffer);
     if (!chunk->hasTypeRiff()) {
         QMessageBox::warning(qApp->activeWindow(),
                              qApp->applicationName(),
-                             tr("%1 is not a valid RIFF file").arg(riffFile->fileName()));
+                             tr("%1 is not a valid RIFF file").arg(fileName));
         return false;
     }
 
@@ -77,16 +78,6 @@ void TreeModel::traverseRiff(const riff::RiffList<>::Chunk *listChunk, TreeItem 
         }
         child = child->nextChunk();
     }
-}
-
-uint8_t *TreeModel::buffer() const
-{
-    return m_buffer;
-}
-
-void TreeModel::setBuffer(uint8_t *newBuffer)
-{
-    m_buffer = newBuffer;
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const

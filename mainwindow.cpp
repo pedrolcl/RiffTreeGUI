@@ -67,7 +67,6 @@ void MainWindow::open()
 
         delete m_treemodel;
         m_treemodel = new TreeModel(this);
-        m_treemodel->setBuffer(m_buffer);
 
         m_treeview->setModel(m_treemodel);
         m_treeview->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -75,7 +74,7 @@ void MainWindow::open()
         m_treeview->setColumnWidth(1, 66);
         m_treeview->setColumnWidth(2, 66);
 
-        if (m_treemodel->loadData(&file)) {
+        if (m_treemodel->loadData(m_buffer, file.fileName())) {
             if (m_hexdoc) {
                 m_hexdoc->deleteLater();
             }
