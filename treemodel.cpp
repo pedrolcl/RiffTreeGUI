@@ -18,7 +18,7 @@
 #include <QStringList>
 #include <QVariantList>
 
-using namespace Qt::StringLiterals;
+//using namespace Qt::StringLiterals;
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent)

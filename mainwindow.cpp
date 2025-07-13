@@ -11,7 +11,7 @@
 #include <QMessageBox>
 #include <QScreen>
 
-using namespace Qt::StringLiterals;
+//using namespace Qt::StringLiterals;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     createMenus();
 
     setWindowTitle(tr("Riff Tree"));
+    setWindowIcon(QIcon(":/RiffTree.png"));
     setMinimumSize(666, 666);
     const auto screenSize = screen()->availableSize();
     resize({screenSize.width() / 2, screenSize.height() * 2 / 3});
@@ -49,7 +50,6 @@ void MainWindow::open()
         &selectedFilter,
         QFileDialog::ReadOnly);
     if (!fileName.isEmpty()) {
-        qDebug() << fileName;
         openFileName = fileName;
         QFile file(fileName);
         file.open(QIODevice::ReadOnly);
@@ -105,21 +105,37 @@ void MainWindow::treeItemClicked(const QModelIndex &index)
 
 void MainWindow::createActions()
 {
-    openAct = new QAction(QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen), tr("&Open..."), this);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QIcon openIcon = QIcon::fromTheme("document-open");
+#else
+    QIcon openIcon = QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen);
+#endif
+    openAct = new QAction(openIcon, tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
     openAct->setStatusTip(tr("Open an existing file"));
     connect(openAct, &QAction::triggered, this, &MainWindow::open);
 
-    exitAct = new QAction(QIcon::fromTheme(QIcon::ThemeIcon::ApplicationExit), tr("E&xit"), this);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QIcon exitIcon = QIcon::fromTheme("application-exit");
+#else
+    QIcon exitIcon = QIcon::fromTheme(QIcon::ThemeIcon::ApplicationExit);
+#endif
+    exitAct = new QAction(exitIcon, tr("E&xit"), this);
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, &QAction::triggered, this, &QWidget::close);
 
-    aboutAct = new QAction(QIcon::fromTheme(QIcon::ThemeIcon::HelpAbout), tr("&About"), this);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QIcon helpIcon = QIcon::fromTheme("help-about");
+#else
+    QIcon helpIcon = QIcon::fromTheme(QIcon::ThemeIcon::HelpAbout);
+#endif
+    aboutAct = new QAction(helpIcon, tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
     connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
 
-    aboutQtAct = new QAction(tr("About &Qt"), this);
+    QIcon aboutQtIcon = qApp->style()->standardIcon(QStyle::SP_TitleBarMenuButton);
+    aboutQtAct = new QAction(aboutQtIcon, tr("About &Qt"), this);
     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
     connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
 }

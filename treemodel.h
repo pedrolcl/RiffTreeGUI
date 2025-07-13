@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QModelIndex>
 #include <QVariant>
+#include <memory>
 
 #include "riff.h"
 

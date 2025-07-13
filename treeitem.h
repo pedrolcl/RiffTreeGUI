@@ -5,8 +5,10 @@
 #ifndef TREEITEM_H
 #define TREEITEM_H
 
-#include <QVariant>
 #include <QList>
+#include <QVariant>
+#include <memory>
+#include <vector>
 
 class TreeItem
 {
