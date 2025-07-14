@@ -33,14 +33,11 @@ int TreeModel::columnCount(const QModelIndex &parent) const
     return rootItem->columnCount();
 }
 
-bool TreeModel::loadData(uint8_t *buffer, const QString fileName)
+bool TreeModel::loadData(uint8_t *buffer)
 {
     m_buffer = buffer;
     riff::RiffChunk<> *chunk = reinterpret_cast<riff::RiffChunk<> *>(m_buffer);
     if (!chunk->hasTypeRiff()) {
-        QMessageBox::warning(qApp->activeWindow(),
-                             qApp->applicationName(),
-                             tr("%1 is not a valid RIFF file").arg(fileName));
         return false;
     }
 

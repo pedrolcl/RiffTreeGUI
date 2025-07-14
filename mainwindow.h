@@ -24,6 +24,7 @@ private slots:
     void open();
     void about();
     void treeItemClicked(const QModelIndex &index);
+    void updateWindowTitle();
 
 private:
     void createActions();
@@ -40,12 +41,10 @@ private:
     QTreeView *m_treeview;
     QHexView *m_hexview;
 
-    uint8_t *m_buffer{nullptr};
-
     TreeModel *m_treemodel{nullptr};
     QHexDocument *m_hexdoc{nullptr};
 
-    QString openFileName;
+    QString m_openFileName;
 };
 
 #endif // MAINWINDOW_H

@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -19,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_hexview{new QHexView(this)}
 {
     m_treeview->setModel(m_treemodel);
+    m_hexview->setDocument(m_hexdoc);
     m_hexview->setReadOnly(true);
 
     m_splitter = new QSplitter(this);
@@ -30,13 +32,13 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
 
-    setWindowTitle(tr("Riff Tree"));
     setWindowIcon(QIcon(":/RiffTree.png"));
     setMinimumSize(666, 666);
     const auto screenSize = screen()->availableSize();
     resize({screenSize.width() / 2, screenSize.height() * 2 / 3});
 
     connect(m_treeview, &QTreeView::clicked, this, &MainWindow::treeItemClicked);
+    updateWindowTitle();
 }
 
 void MainWindow::open()
@@ -45,12 +47,11 @@ void MainWindow::open()
     QString fileName = QFileDialog::getOpenFileName(
         this,
         tr("Open File"),
-        openFileName,
+        m_openFileName,
         tr("All Files (*);;Riff Files (*.dls *.sf2 *.avi *.wav *.rmi)"),
         &selectedFilter,
         QFileDialog::ReadOnly);
     if (!fileName.isEmpty()) {
-        openFileName = fileName;
         QFile file(fileName);
         file.open(QIODevice::ReadOnly);
 
@@ -58,8 +59,8 @@ void MainWindow::open()
         // but it is more portable between different operating systems than mmap().
         // Previously, we tried to use MAP_HUGETLB with mmap() syscall but it is only
         // valid for anonymous memory.
-        m_buffer = file.map(0, file.size());
-        if (m_buffer == NULL) {
+        uint8_t *buffer = file.map(0, file.size());
+        if (buffer == nullptr) {
             QMessageBox::warning(this, qApp->applicationName(), file.errorString());
             file.close();
             return;
@@ -73,22 +74,31 @@ void MainWindow::open()
         m_treeview->setColumnWidth(0, 100);
         m_treeview->setColumnWidth(1, 66);
         m_treeview->setColumnWidth(2, 66);
+        m_hexview->setDocument(nullptr);
 
-        if (m_treemodel->loadData(m_buffer, file.fileName())) {
-            if (m_hexdoc) {
-                m_hexdoc->deleteLater();
-            }
-            m_hexdoc = QHexDocument::fromMemory<QMemoryBuffer>(reinterpret_cast<char *>(m_buffer),
+        if (m_treemodel->loadData(buffer)) {
+            m_hexdoc = QHexDocument::fromMemory<QMemoryBuffer>(reinterpret_cast<char *>(buffer),
                                                                file.size());
             m_hexview->setDocument(m_hexdoc);
-
             m_treeview->expandAll();
             m_treeview->resizeColumnToContents(0);
+
+            m_openFileName = QFileInfo(fileName).fileName();
+            updateWindowTitle();
+        } else {
+            QMessageBox::warning(this,
+                                 qApp->applicationName(),
+                                 tr("%1 is not a valid RIFF file").arg(fileName));
         }
 
-        file.unmap(m_buffer);
+        file.unmap(buffer);
         file.close();
     }
+}
+
+void MainWindow::updateWindowTitle()
+{
+    setWindowTitle(tr("%1 [%2]").arg(qApp->applicationName()).arg(m_openFileName));
 }
 
 void MainWindow::about()
@@ -101,12 +111,12 @@ void MainWindow::about()
 
 void MainWindow::treeItemClicked(const QModelIndex &index)
 {
-    QString title = m_treemodel->data(index.sibling(index.row(), 0), Qt::DisplayRole).toString();
+    // QString title = m_treemodel->data(index.sibling(index.row(), 0), Qt::DisplayRole).toString();
     qint64 offs = m_treemodel->data(index.sibling(index.row(), 1), Qt::DisplayRole).toLongLong();
     qint64 size = m_treemodel->data(index.sibling(index.row(), 2), Qt::DisplayRole).toLongLong()
                   + 2 * sizeof(uint32_t);
-    //qDebug() << Q_FUNC_INFO << title << "offset:" << offs << "size:" << size;
 
+    // qDebug() << Q_FUNC_INFO << title << "offset:" << offs << "size:" << size;
     // m_hexview->clearMetadata();
     // m_hexview->hexCursor()->move(offs);
     // m_hexview->setMetadata(offs, offs + size, Qt::black, Qt::yellow, title);
