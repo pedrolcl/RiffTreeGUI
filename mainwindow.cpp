@@ -41,6 +41,51 @@ MainWindow::MainWindow(QWidget *parent)
     updateWindowTitle();
 }
 
+void MainWindow::openFile(const QString fileName)
+{
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+
+    // QFile::map doesn't allow options like MAP_HUGETLB, MAP_PRIVATE or MAP_LOCKED
+    // but it is more portable between different operating systems than mmap().
+    // Previously, we tried to use MAP_HUGETLB with mmap() syscall but it is only
+    // valid for anonymous memory.
+    uint8_t *buffer = file.map(0, file.size());
+    if (buffer == nullptr) {
+        QMessageBox::warning(this, qApp->applicationName(), file.errorString());
+        file.close();
+        return;
+    }
+
+    delete m_treemodel;
+    m_treemodel = new TreeModel(this);
+
+    m_treeview->setModel(m_treemodel);
+    m_treeview->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_treeview->setColumnWidth(0, 100);
+    m_treeview->setColumnWidth(1, 66);
+    m_treeview->setColumnWidth(2, 66);
+    m_hexview->setDocument(nullptr);
+
+    if (m_treemodel->loadData(buffer)) {
+        m_hexdoc = QHexDocument::fromMemory<QMemoryBuffer>(reinterpret_cast<char *>(buffer),
+                                                           file.size());
+        m_hexview->setDocument(m_hexdoc);
+        m_treeview->expandAll();
+        m_treeview->resizeColumnToContents(0);
+
+        m_openFileName = QFileInfo(fileName).fileName();
+        updateWindowTitle();
+    } else {
+        QMessageBox::warning(this,
+                             qApp->applicationName(),
+                             tr("%1 is not a valid RIFF file").arg(fileName));
+    }
+
+    file.unmap(buffer);
+    file.close();
+}
+
 void MainWindow::open()
 {
     QString selectedFilter;
@@ -52,47 +97,7 @@ void MainWindow::open()
         &selectedFilter,
         QFileDialog::ReadOnly);
     if (!fileName.isEmpty()) {
-        QFile file(fileName);
-        file.open(QIODevice::ReadOnly);
-
-        // QFile::map doesn't allow options like MAP_HUGETLB, MAP_PRIVATE or MAP_LOCKED
-        // but it is more portable between different operating systems than mmap().
-        // Previously, we tried to use MAP_HUGETLB with mmap() syscall but it is only
-        // valid for anonymous memory.
-        uint8_t *buffer = file.map(0, file.size());
-        if (buffer == nullptr) {
-            QMessageBox::warning(this, qApp->applicationName(), file.errorString());
-            file.close();
-            return;
-        }
-
-        delete m_treemodel;
-        m_treemodel = new TreeModel(this);
-
-        m_treeview->setModel(m_treemodel);
-        m_treeview->setSelectionMode(QAbstractItemView::SingleSelection);
-        m_treeview->setColumnWidth(0, 100);
-        m_treeview->setColumnWidth(1, 66);
-        m_treeview->setColumnWidth(2, 66);
-        m_hexview->setDocument(nullptr);
-
-        if (m_treemodel->loadData(buffer)) {
-            m_hexdoc = QHexDocument::fromMemory<QMemoryBuffer>(reinterpret_cast<char *>(buffer),
-                                                               file.size());
-            m_hexview->setDocument(m_hexdoc);
-            m_treeview->expandAll();
-            m_treeview->resizeColumnToContents(0);
-
-            m_openFileName = QFileInfo(fileName).fileName();
-            updateWindowTitle();
-        } else {
-            QMessageBox::warning(this,
-                                 qApp->applicationName(),
-                                 tr("%1 is not a valid RIFF file").arg(fileName));
-        }
-
-        file.unmap(buffer);
-        file.close();
+        openFile(fileName);
     }
 }
 

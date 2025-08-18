@@ -1,6 +1,8 @@
 # RiffTreeGUI
 A GUI application to show the tree structure of a [RIFF file](https://en.wikipedia.org/wiki/Resource_Interchange_File_Format).
 
+![logo](RiffTree.png)
+
 This has been possible thanks to the following projects:
 
 * [rifftree](https://github.com/jesustorresdev/rifftree) (Apache 2.0 license)
