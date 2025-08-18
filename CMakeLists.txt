@@ -23,11 +23,12 @@ add_executable(${PROJECT_NAME}
     mainwindow.cpp
     mainwindow.h
     resources.qrc
-    riff.h
     treeitem.cpp
     treeitem.h
     treemodel.cpp
     treemodel.h
+# rifftree: https://github.com/jesustorresdev/rifftree (Apache 2.0 license)
+    riff.h
 # QHexView: https://github.com/Dax89/QHexView (MIT license)
     qhexview/model/buffer/qdevicebuffer.cpp
     qhexview/model/buffer/qdevicebuffer.h
@@ -74,6 +75,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
+)
+
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+    VERSION=${PROJECT_VERSION}
+    PROGRAM=${PROJECT_NAME}
 )
 
 include(GNUInstallDirs)
