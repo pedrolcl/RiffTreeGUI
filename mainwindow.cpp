@@ -93,7 +93,8 @@ void MainWindow::open()
         this,
         tr("Open File"),
         m_openFileName,
-        tr("All Files (*);;Riff Files (*.dls *.sf2 *.avi *.wav *.rmi)"),
+        tr("All Files (*);;Riff Files (*.dls *.sf2 *.sf3 *.avi *.wav "
+           "*.rmi *.cdr *.ani *.pal *.webp)"),
         &selectedFilter,
         QFileDialog::ReadOnly);
     if (!fileName.isEmpty()) {
