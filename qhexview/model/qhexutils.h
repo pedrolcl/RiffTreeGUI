@@ -44,23 +44,40 @@ struct QHexPosition {
 
 namespace QHexUtils {
 
+enum class QHexPatternType {
+    BYTE = 0,
+    WILDCARD,
+    SKIP,
+};
+
+struct QHexPatternItem {
+    QHexPatternType type;
+    quint8 b;
+};
+
+using QHexPattern = QList<QHexPatternItem>;
+
 bool isHex(char ch);
+QByteArray toHex(quint8 b);
 QByteArray toHex(const QByteArray& ba, char sep);
 QByteArray toHex(const QByteArray& ba);
 qint64 positionToOffset(const QHexOptions* options, QHexPosition pos);
 QHexPosition offsetToPosition(const QHexOptions* options, qint64 offset);
-bool checkPattern(QString pattern);
+bool checkPattern(const QString& s);
 
-QPair<qint64, qint64> find(const QHexView* hexview, QVariant value,
+QPair<qint64, qint64> find(const QHexView *hexview,
+                           QVariant value,
                            qint64 startoffset = 0,
                            QHexFindMode mode = QHexFindMode::Text,
                            unsigned int options = QHexFindOptions::None,
                            QHexFindDirection fd = QHexFindDirection::Forward);
 
-QPair<qint64, qint64>
-replace(const QHexView* hexview, QVariant oldvalue, QVariant newvalue,
-        qint64 startoffset = 0, QHexFindMode mode = QHexFindMode::Text,
-        unsigned int options = QHexFindOptions::None,
-        QHexFindDirection fd = QHexFindDirection::Forward);
+QPair<qint64, qint64> replace(const QHexView *hexview,
+                              QVariant oldvalue,
+                              QVariant newvalue,
+                              qint64 startoffset = 0,
+                              QHexFindMode mode = QHexFindMode::Text,
+                              unsigned int options = QHexFindOptions::None,
+                              QHexFindDirection fd = QHexFindDirection::Forward);
 
 } // namespace QHexUtils

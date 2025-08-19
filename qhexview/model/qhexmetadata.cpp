@@ -37,11 +37,11 @@ void QHexMetadata::removeMetadata(qint64 line) {
 
 void QHexMetadata::removeBackground(qint64 line) {
     this->clearMetadata(line, [](QHexMetadataItem& mi) -> bool {
-        if(!mi.background.isValid())
+        if(mi.format.background == Qt::NoBrush)
             return false;
 
-        if(mi.foreground.isValid() || !mi.comment.isEmpty()) {
-            mi.background = QColor();
+        if(mi.format.foreground.isValid() || !mi.comment.isEmpty()) {
+            mi.format.background = QBrush{};
             return false;
         }
 
@@ -51,11 +51,11 @@ void QHexMetadata::removeBackground(qint64 line) {
 
 void QHexMetadata::removeForeground(qint64 line) {
     this->clearMetadata(line, [](QHexMetadataItem& mi) -> bool {
-        if(!mi.foreground.isValid())
+        if(!mi.format.foreground.isValid())
             return false;
 
-        if(mi.background.isValid() || !mi.comment.isEmpty()) {
-            mi.foreground = QColor();
+        if(mi.format.background != Qt::NoBrush || !mi.comment.isEmpty()) {
+            mi.format.foreground = QColor{};
             return false;
         }
 
@@ -68,7 +68,8 @@ void QHexMetadata::removeComments(qint64 line) {
         if(mi.comment.isEmpty())
             return false;
 
-        if(mi.foreground.isValid() || mi.background.isValid()) {
+        if(mi.format.foreground.isValid() ||
+           mi.format.background != Qt::NoBrush) {
             mi.comment.clear();
             return false;
         }
@@ -79,12 +80,13 @@ void QHexMetadata::removeComments(qint64 line) {
 
 void QHexMetadata::unhighlight(qint64 line) {
     this->clearMetadata(line, [](QHexMetadataItem& mi) -> bool {
-        if(!mi.foreground.isValid() && !mi.background.isValid())
+        if(!mi.format.foreground.isValid() &&
+           mi.format.background == Qt::NoBrush)
             return false;
 
         if(!mi.comment.isEmpty()) {
-            mi.foreground = QColor();
-            mi.background = QColor();
+            mi.format.foreground = {};
+            mi.format.background = QBrush();
             return false;
         }
 
@@ -125,18 +127,18 @@ void QHexMetadata::clearMetadata(qint64 line, ClearMetadataCallback&& cb) {
 }
 
 void QHexMetadata::setMetadata(const QHexMetadataItem& mi) {
-    if(!m_options->linelength)
+    if(!m_options->line_length)
         return;
 
-    const qint64 firstline = mi.begin / m_options->linelength;
-    const qint64 lastline = mi.end / m_options->linelength;
+    const qint64 firstline = mi.begin / m_options->line_length;
+    const qint64 lastline = mi.end / m_options->line_length;
     bool notify = false;
 
     for(auto line = firstline; line <= lastline; line++) {
-        auto start = line == firstline ? mi.begin % m_options->linelength : 0;
+        auto start = line == firstline ? mi.begin % m_options->line_length : 0;
         auto length = line == lastline
-                          ? (mi.end % m_options->linelength) - start
-                          : m_options->linelength;
+                          ? (mi.end % m_options->line_length) - start
+                          : m_options->line_length;
         if(length <= 0)
             continue;
 

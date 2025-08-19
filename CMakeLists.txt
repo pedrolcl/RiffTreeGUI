@@ -40,15 +40,15 @@ add_executable(${PROJECT_NAME}
     qhexview/model/buffer/qmemorybuffer.h
     qhexview/model/buffer/qmemoryrefbuffer.cpp
     qhexview/model/buffer/qmemoryrefbuffer.h
-    qhexview/model/commands/hexcommand.cpp
-    qhexview/model/commands/hexcommand.h
+    qhexview/model/commands/hexviewcommand.cpp
+    qhexview/model/commands/hexviewcommand.h
     qhexview/model/commands/insertcommand.cpp
     qhexview/model/commands/insertcommand.h
     qhexview/model/commands/removecommand.cpp
     qhexview/model/commands/removecommand.h
     qhexview/model/commands/replacecommand.cpp
     qhexview/model/commands/replacecommand.h
-    qhexview/model/commands/replacecommand.h
+    qhexview/model/qhexchanges.h
     qhexview/model/qhexcursor.cpp
     qhexview/model/qhexcursor.h
     qhexview/model/qhexdelegate.cpp

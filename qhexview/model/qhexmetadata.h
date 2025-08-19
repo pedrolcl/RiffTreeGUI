@@ -9,7 +9,7 @@
 
 struct QHexMetadataItem {
     qint64 begin, end;
-    QColor foreground, background;
+    QHexCharFormat format;
     QString comment;
 };
 
@@ -36,43 +36,39 @@ public:
     void clear();
 
 public:
-    inline void setMetadata(qint64 begin, qint64 end, const QColor& fgcolor,
-                            const QColor& bgcolor, const QString& comment) {
-        this->setMetadata({begin, end, fgcolor, bgcolor, comment});
+    void setMetadata(qint64 begin, qint64 end, const QColor& fg,
+                     const QBrush& bg, const QString& comment) {
+        this->setMetadata({begin, end, {bg, fg, {}}, comment});
     }
 
-    inline void setForeground(qint64 begin, qint64 end, const QColor& fgcolor) {
-        this->setMetadata(begin, end, fgcolor, QColor(), QString());
+    void setForeground(qint64 begin, qint64 end, const QColor& fg) {
+        this->setMetadata(begin, end, fg, Qt::NoBrush, QString{});
     }
 
-    inline void setBackground(qint64 begin, qint64 end, const QColor& bgcolor) {
-        this->setMetadata(begin, end, QColor(), bgcolor, QString());
+    void setBackground(qint64 begin, qint64 end, const QBrush& bg) {
+        this->setMetadata(begin, end, QColor{}, bg, QString{});
     }
 
-    inline void setComment(qint64 begin, qint64 end, const QString& comment) {
-        this->setMetadata(begin, end, QColor(), QColor(), comment);
-    };
-
-    inline void setMetadataSize(qint64 begin, qint64 length,
-                                const QColor& fgcolor, const QColor& bgcolor,
-                                const QString& comment) {
-        this->setMetadata({begin, begin + length, fgcolor, bgcolor, comment});
+    void setComment(qint64 begin, qint64 end, const QString& comment) {
+        this->setMetadata(begin, end, QColor{}, Qt::NoBrush, comment);
     }
 
-    inline void setForegroundSize(qint64 begin, qint64 length,
-                                  const QColor& fgcolor) {
-        this->setForeground(begin, begin + length, fgcolor);
+    void setMetadataSize(qint64 begin, qint64 length, const QColor& fg,
+                         const QBrush& bg, const QString& comment) {
+        this->setMetadata({begin, begin + length, {bg, fg, {}}, comment});
     }
 
-    inline void setBackgroundSize(qint64 begin, qint64 length,
-                                  const QColor& bgcolor) {
-        this->setBackground(begin, begin + length, bgcolor);
+    void setForegroundSize(qint64 begin, qint64 length, const QColor& fg) {
+        this->setForeground(begin, begin + length, fg);
     }
 
-    inline void setCommentSize(qint64 begin, qint64 length,
-                               const QString& comment) {
+    void setBackgroundSize(qint64 begin, qint64 length, const QBrush& bg) {
+        this->setBackground(begin, begin + length, bg);
+    }
+
+    void setCommentSize(qint64 begin, qint64 length, const QString& comment) {
         this->setComment(begin, begin + length, comment);
-    };
+    }
 
 private:
     void copy(const QHexMetadata* metadata);

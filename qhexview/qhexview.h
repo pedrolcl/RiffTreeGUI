@@ -9,22 +9,49 @@
 #include <qhexview/model/qhexdocument.h>
 #include <QList>
 #include <QRectF>
-#include <QTextCharFormat>
 
 #if defined(QHEXVIEW_ENABLE_DIALOGS)
 class HexFindDialog;
 #endif
 
-class QHexView: public QAbstractScrollArea {
+struct QHexCopyFormat {
+    QString prefix;
+    QString suffix;
+    QString byte_prefix;
+    QString byte_suffix;
+    QString separator;
+    int indent{-1};
+    bool trim_last_separator{false};
+    bool line_break{false};
+    bool use_tabs{false};
+};
+
+class QHexView : public QAbstractScrollArea
+{
     Q_OBJECT
 
-public:
-    enum class CopyMode { Visual, HexArraySquare, HexArrayCurly, HexArrayChar };
-    Q_ENUM(CopyMode);
+    struct PaintContext {
+        const QHexView *hexview;
+        QPainter* painter;
+        const QFontMetricsF* fontmetrics;
+        QHexCharFormat format;
+        qreal x, y;
+
+        explicit PaintContext(const QHexView *hv, QPainter *p, const QFontMetricsF *fm);
+        void drawText(const QString& s, const QHexCharFormat& cf,
+                      bool pad = false);
+        void drawText(const QString& s, bool pad = false);
+        void fillLine(QColor c) const;
+        void clearFormat();
+        void nextLine();
+        void prevLine();
+        void advanceX();
+    };
 
 public:
-    explicit QHexView(QWidget* parent = nullptr);
+    explicit QHexView(QWidget *parent = nullptr);
     QRectF headerRect() const;
+    QRectF documentRect() const;
     QRectF addressRect() const;
     QRectF hexRect() const;
     QRectF asciiRect() const;
@@ -34,12 +61,14 @@ public:
     QHexOptions options() const;
     QColor getReadableColor(QColor c) const;
     QByteArray selectedBytes() const;
+    QByteArray visibleBytes() const;
     QByteArray getLine(qint64 line) const;
     unsigned int addressWidth() const;
     unsigned int lineLength() const;
     bool isModified() const;
     bool canUndo() const;
     bool canRedo() const;
+    bool trackChanges() const;
     quint64 offset() const;
     quint64 address() const;
     QHexPosition positionFromOffset(quint64 offset) const;
@@ -65,19 +94,20 @@ public:
     void setDocument(QHexDocument* doc);
     void setData(const QByteArray& ba);
     void setData(QHexBuffer* buffer);
+    void setTrackChanges(bool b);
     void setCursorMode(QHexCursor::Mode mode);
-    void setByteColor(quint8 b, QHexColor c);
-    void setByteForeground(quint8 b, QColor c);
-    void setByteBackground(quint8 b, QColor c);
-    void setMetadata(qint64 begin, qint64 end, const QColor& fgcolor,
-                     const QColor& bgcolor, const QString& comment);
-    void setForeground(qint64 begin, qint64 end, const QColor& fgcolor);
-    void setBackground(qint64 begin, qint64 end, const QColor& bgcolor);
+    void setByteColor(quint8 b, const QHexCharFormat& cf);
+    void setByteForeground(quint8 b, const QColor& c);
+    void setByteBackground(quint8 b, const QBrush& c);
+    void setMetadata(qint64 begin, qint64 end, const QColor& fg,
+                     const QBrush& bg, const QString& comment);
+    void setForeground(qint64 begin, qint64 end, const QColor& fg);
+    void setBackground(qint64 begin, qint64 end, const QBrush& bg);
     void setComment(qint64 begin, qint64 end, const QString& comment);
-    void setMetadataSize(qint64 begin, qint64 length, const QColor& fgcolor,
-                         const QColor& bgcolor, const QString& comment);
-    void setForegroundSize(qint64 begin, qint64 length, const QColor& fgcolor);
-    void setBackgroundSize(qint64 begin, qint64 length, const QColor& bgcolor);
+    void setMetadataSize(qint64 begin, qint64 length, const QColor& fg,
+                         const QBrush& bg, const QString& comment);
+    void setForegroundSize(qint64 begin, qint64 length, const QColor& fg);
+    void setBackgroundSize(qint64 begin, qint64 length, const QBrush& bg);
     void setCommentSize(qint64 begin, qint64 length, const QString& comment);
     void removeMetadata(qint64 line);
     void removeBackground(qint64 line);
@@ -94,10 +124,12 @@ public Q_SLOTS:
     void undo();
     void redo();
     void cut(bool hex = false);
-    void copyAs(CopyMode mode = CopyMode::Visual) const;
+    void copyVisual() const;
+    void copyFormat(const QHexCopyFormat& cf) const;
     void copy(bool hex = false) const;
     void paste(bool hex = false);
     void clearModified();
+    void clearChanges();
     void selectAll();
     void removeSelection();
     void switchMode();
@@ -109,18 +141,23 @@ public Q_SLOTS:
     void setAutoWidth(bool r);
 
 private:
-    void paint(QPainter* painter) const;
+    void paint(QPainter* p) const;
     void checkOptions();
     void checkState();
     void checkAndUpdate(bool calccolumns = false);
     void calcColumns();
     void ensureVisible();
     void drawSeparators(QPainter* p) const;
-    void drawHeader(QTextCursor& c) const;
-    void drawDocument(QTextCursor& c) const;
-    QTextCharFormat drawFormat(QTextCursor& c, quint8 b, const QString& s,
-                               QHexArea area, qint64 line, qint64 column,
-                               bool applyformat) const;
+    void drawHeader(PaintContext* ctx) const;
+    void drawDocument(PaintContext* ctx) const;
+    void drawAddressPart(PaintContext* ctx, quint64 line) const;
+    void drawHexPart(PaintContext* ctx, const QByteArray& linebytes,
+                     quint64 line) const;
+    void drawAsciiPart(PaintContext* ctx, const QByteArray& linebytes,
+                       quint64 line) const;
+    QHexCharFormat drawFormat(PaintContext* ctx, quint8 b, const QString& s,
+                              QHexArea area, qint64 line, qint64 column,
+                              bool applyformat) const;
     unsigned int calcAddressWidth() const;
     int visibleLines(bool absolute = false) const;
     qint64 getLastColumn(qint64 line) const;
@@ -131,6 +168,7 @@ private:
     qreal asciiColumnX() const;
     qreal endColumnX() const;
     qreal cellWidth() const;
+    qreal lineWidth() const;
     qreal lineHeight() const;
     qint64 positionFromLineCol(qint64 line, qint64 col) const;
     QHexPosition positionFromPoint(QPoint pt) const;
@@ -138,6 +176,7 @@ private:
     QHexArea areaFromPoint(QPoint pt) const;
     void moveNext(bool select = false);
     void movePrevious(bool select = false);
+    bool atBottom() const;
     bool keyPressMove(QKeyEvent* e);
     bool keyPressTextInput(QKeyEvent* e);
     bool keyPressAction(QKeyEvent* e);
@@ -160,7 +199,8 @@ private:
 
 Q_SIGNALS:
     void dataChanged(const QByteArray& data, quint64 offset,
-                     QHexDocument::ChangeReason reason);
+                     QHexChangeReason reason);
+    void trackChangesChanged(bool trackchanges);
     void modifiedChanged(bool modified);
     void positionChanged();
     void modeChanged();

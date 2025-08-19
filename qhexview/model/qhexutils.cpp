@@ -1,3 +1,4 @@
+#include "qhexview/model/qhexdocument.h"
 #include <QDataStream>
 #include <QGlobalStatic>
 #include <QHash>
@@ -36,68 +37,96 @@ bool isHex(char ch) {
 
 namespace PatternUtils {
 
-Q_GLOBAL_STATIC_WITH_ARGS(QString, WILDCARD_BYTE, ("??"))
-
-bool check(QString& p, qint64& len) {
-    static QHash<QString, QPair<QString, size_t>>
-        processed; // Cache processed patterns
-
-    auto it = processed.find(p);
-
-    if(it != processed.end()) {
-        p = it.value().first;
-        len = it.value().second;
-        return true;
-    }
-
-    QString op = p; // Store unprocessed pattern
-    p = p.simplified().replace(" ", "");
-    if(p.isEmpty() || (p.size() % 2))
+bool match(const QHexDocument* doc, const QHexPattern& pattern, qint64 idx,
+           qint64& matchlen) {
+    if(doc->isEmpty() || pattern.isEmpty())
         return false;
 
-    int wccount = 0;
+    int ppos = 0, dpos = idx;
+    int skipidx = -1, matchidx = -1;
+    qint64 len = doc->length();
 
-    for(auto i = 0; i < p.size() - 2; i += 2) {
-        const auto& hexb = p.mid(i, 2);
+    while(ppos < pattern.size()) {
+        if(dpos >= len)
+            return false;
 
-        if(hexb == *WILDCARD_BYTE) {
-            wccount++;
-            continue;
+        if((pattern[ppos].type == QHexPatternType::WILDCARD) ||
+           (pattern[ppos].type == QHexPatternType::BYTE &&
+            pattern[ppos].b == doc->at(dpos))) {
+            dpos++;
+            ppos++;
         }
-
-        if(!QHexUtils::isHex(hexb.at(0).toLatin1()) ||
-           !QHexUtils::isHex(hexb.at(1).toLatin1()))
+        else if(pattern[ppos].type == QHexPatternType::SKIP) {
+            skipidx = ppos++;
+            matchidx = dpos;
+        }
+        else if(skipidx != -1) {
+            ppos = skipidx + 1;
+            dpos = ++matchidx;
+        }
+        else
             return false;
     }
 
-    if(wccount >= p.size())
+    while(ppos < pattern.size() && pattern[ppos].type == QHexPatternType::SKIP)
+        ppos++;
+
+    matchlen = dpos - idx;
+    return ppos == pattern.size();
+}
+
+bool nextChar(const QString& s, int& i, char& ch) {
+    while(i < s.size() && s[i].isSpace()) {
+        ch = ' ';
+        i++;
+    }
+
+    if(i >= s.size())
         return false;
-    len = p.size() / 2;
-    processed[op] = qMakePair(p, len); // Cache processed pattern
+
+    ch = s[i++].cell();
     return true;
 }
 
-bool match(const QByteArray& data, const QString& pattern) {
-    for(qint64 i = 0, idx = 0; (i <= (pattern.size() - 2)); i += 2, idx++) {
-        if(idx >= data.size())
-            return false;
+quint8 mkHex_1(char c) {
+    if('0' <= c && c <= '9')
+        return c - '0';
+    if('a' <= c && c <= 'f')
+        return c - 'a' + 10;
+    if('A' <= c && c <= 'F')
+        return c - 'A' + 10;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        QStringView hexb = QStringView{pattern}.mid(i, 2);
-#else
-        const QStringRef& hexb = pattern.midRef(i, 2);
-#endif
+    qFatal("Invalid hex integer '%c'", c);
+    return 0;
+}
 
-        if(hexb == *WILDCARD_BYTE)
-            continue;
+quint8 mkHex(char b1, char b2) {
+    quint8 h = PatternUtils::mkHex_1(b1);
+    quint8 l = PatternUtils::mkHex_1(b2);
+    return (h << 4) | l;
+}
 
-        bool ok = false;
-        auto b = static_cast<char>(hexb.toUInt(&ok, 16));
-        if(!ok || (b != data.at(idx)))
-            return false;
+QHexPattern compile(const QString& s) {
+    QHexPattern p;
+    char b1 = 0, b2 = 0;
+
+    for(int i = 0; i < s.length();) {
+        if(!PatternUtils::nextChar(s, i, b1) ||
+           !PatternUtils::nextChar(s, i, b2)) {
+            if(std::isspace(b1))
+                break;
+            return {};
+        }
+
+        if(b1 == '?' && b2 == b1)
+            p.push_back({QHexPatternType::WILDCARD, {}});
+        else if(b1 == '.' && b2 == b1)
+            p.push_back({QHexPatternType::SKIP, {}});
+        else if(QHexUtils::isHex(b1) && QHexUtils::isHex(b2))
+            p.push_back({QHexPatternType::BYTE, PatternUtils::mkHex(b1, b2)});
     }
 
-    return true;
+    return p;
 }
 
 } // namespace PatternUtils
@@ -116,8 +145,8 @@ unsigned int countBits(uint val) {
 }
 
 template<typename Function>
-qint64 findIter(qint64 startoffset, QHexFindDirection fd,
-                const QHexView* hexview, Function&& f) {
+qint64 findIter(qint64 startoffset, QHexFindDirection fd, const QHexView *hexview, Function &&f)
+{
     QHexDocument* hexdocument = hexview->hexDocument();
     qint64 offset = -1;
 
@@ -150,9 +179,12 @@ qint64 findIter(qint64 startoffset, QHexFindDirection fd,
     return offset;
 }
 
-qint64 findDefault(const QByteArray& value, qint64 startoffset,
-                   const QHexView* hexview, unsigned int options,
-                   QHexFindDirection fd) {
+qint64 findDefault(const QByteArray &value,
+                   qint64 startoffset,
+                   const QHexView *hexview,
+                   unsigned int options,
+                   QHexFindDirection fd)
+{
     QHexDocument* hexdocument = hexview->hexDocument();
     if(value.size() > hexdocument->length())
         return -1;
@@ -186,21 +218,21 @@ qint64 findDefault(const QByteArray& value, qint64 startoffset,
         });
 }
 
-qint64 findWildcard(QString pattern, qint64 startoffset,
-                    const QHexView* hexview, QHexFindDirection fd,
-                    qint64& patternlen) {
+qint64 findWildcard(QString pattern,
+                    qint64 startoffset,
+                    const QHexView *hexview,
+                    QHexFindDirection fd,
+                    qint64 &matchlen)
+{
     QHexDocument* hexdocument = hexview->hexDocument();
-    if(!PatternUtils::check(pattern, patternlen) ||
-       (patternlen >= hexdocument->length()))
-        return -1;
+    QHexPattern p = PatternUtils::compile(pattern);
 
-    return findIter(
-        startoffset, fd, hexview,
-        [hexdocument, pattern, patternlen](qint64 idx, qint64& offset) -> bool {
-            if(PatternUtils::match(hexdocument->read(idx, patternlen), pattern))
-                offset = idx;
-            return true;
-        });
+    return findIter(startoffset, fd, hexview,
+                    [&](qint64 idx, qint64& offset) -> bool {
+                        if(PatternUtils::match(hexdocument, p, idx, matchlen))
+                            offset = idx;
+                        return true;
+                    });
 }
 
 QByteArray variantToByteArray(QVariant value, QHexFindMode mode,
@@ -219,7 +251,7 @@ QByteArray variantToByteArray(QVariant value, QHexFindMode mode,
             if(QHEXVIEW_VARIANT_EQ(value, String)) {
                 qint64 len = 0;
                 auto s = value.toString();
-                if(!PatternUtils::check(s, len))
+                if(!QHexUtils::checkPattern(s))
                     return {};
 
                 bool ok = true;
@@ -299,6 +331,13 @@ QByteArray variantToByteArray(QVariant value, QHexFindMode mode,
 
 } // namespace
 
+QByteArray toHex(quint8 b) {
+    QByteArray hex(2, Qt::Uninitialized);
+    hex[0] = HEXMAP->at((b & 0xf0) >> 4);
+    hex[1] = HEXMAP->at(b & 0x0f);
+    return hex;
+}
+
 QByteArray toHex(const QByteArray& ba, char sep) {
     if(ba.isEmpty()) {
         return QByteArray();
@@ -318,16 +357,26 @@ QByteArray toHex(const QByteArray& ba, char sep) {
 }
 
 QByteArray toHex(const QByteArray& ba) { return QHexUtils::toHex(ba, '\0'); }
+
 qint64 positionToOffset(const QHexOptions* options, QHexPosition pos) {
-    return options->linelength * pos.line + pos.column;
-}
-QHexPosition offsetToPosition(const QHexOptions* options, qint64 offset) {
-    return {offset / options->linelength, offset % options->linelength};
+    return options->line_length * pos.line + pos.column;
 }
 
-QPair<qint64, qint64> find(const QHexView* hexview, QVariant value,
-                           qint64 startoffset, QHexFindMode mode,
-                           unsigned int options, QHexFindDirection fd) {
+QHexPosition offsetToPosition(const QHexOptions* options, qint64 offset) {
+    return {offset / options->line_length, offset % options->line_length};
+}
+
+bool checkPattern(const QString& s) {
+    return !PatternUtils::compile(s).isEmpty();
+}
+
+QPair<qint64, qint64> find(const QHexView *hexview,
+                           QVariant value,
+                           qint64 startoffset,
+                           QHexFindMode mode,
+                           unsigned int options,
+                           QHexFindDirection fd)
+{
     qint64 offset = -1, size = 0;
     if(startoffset == -1)
         startoffset = static_cast<qint64>(hexview->offset());
@@ -351,15 +400,14 @@ QPair<qint64, qint64> find(const QHexView* hexview, QVariant value,
     return {offset, offset > -1 ? size : 0};
 }
 
-bool checkPattern(QString pattern) {
-    qint64 len = 0;
-    return PatternUtils::check(pattern, len);
-}
-
-QPair<qint64, qint64> replace(const QHexView* hexview, QVariant oldvalue,
-                              QVariant newvalue, qint64 startoffset,
-                              QHexFindMode mode, unsigned int options,
-                              QHexFindDirection fd) {
+QPair<qint64, qint64> replace(const QHexView *hexview,
+                              QVariant oldvalue,
+                              QVariant newvalue,
+                              qint64 startoffset,
+                              QHexFindMode mode,
+                              unsigned int options,
+                              QHexFindDirection fd)
+{
     auto res =
         QHexUtils::find(hexview, oldvalue, startoffset, mode, options, fd);
 

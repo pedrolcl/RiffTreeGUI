@@ -13,10 +13,10 @@ public:
     enum class Mode { Overwrite, Insert };
 
 private:
-    explicit QHexCursor(const QHexOptions* options, QHexView* parent = nullptr);
+    explicit QHexCursor(const QHexOptions *options, QHexView *parent = nullptr);
 
 public:
-    QHexView* hexView() const;
+    QHexView *hexView() const;
     Mode mode() const;
     qint64 line() const;
     qint64 column() const;

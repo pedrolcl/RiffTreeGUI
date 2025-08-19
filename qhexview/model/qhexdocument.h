@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qhexview/model/buffer/qhexbuffer.h>
+#include <qhexview/model/qhexchanges.h>
 #include <qhexview/model/qhexmetadata.h>
 #include <QUndoStack>
 
@@ -10,22 +11,27 @@ class QHexDocument: public QObject {
     Q_OBJECT
 
 public:
-    enum class ChangeReason { Insert, Remove, Replace };
     enum class FindDirection { Forward, Backward };
-    Q_ENUM(ChangeReason);
     Q_ENUM(FindDirection);
 
 private:
     explicit QHexDocument(QHexBuffer* buffer, QObject* parent = nullptr);
+    qsizetype findChange(qint64 offset) const;
     bool accept(qint64 idx) const;
+    void removeChange(qint64 offset, qint64 n);
+    void moveChanges(qint64 offset, qint64 n);
+    void restoreChanges();
 
 public:
+    QHexChangeReason getChangeReason(qint64 offset) const;
     bool isEmpty() const;
     bool isModified() const;
     bool canUndo() const;
     bool canRedo() const;
+    bool trackChanges() const;
     void setData(const QByteArray& ba);
     void setData(QHexBuffer* buffer);
+    void setTrackChanges(bool b);
     qint64 length() const;
     qint64 indexOf(const QByteArray& ba, qint64 from = 0);
     qint64 lastIndexOf(const QByteArray& ba, qint64 from = 0);
@@ -33,6 +39,7 @@ public:
     uchar at(int offset) const;
 
 public Q_SLOTS:
+    void clearChanges();
     void clearModified();
     void undo();
     void redo();
@@ -63,17 +70,20 @@ public:
     static QHexDocument* create(QObject* parent = nullptr);
 
 Q_SIGNALS:
+    void trackChangesChanged(bool trackchanges);
     void modifiedChanged(bool modified);
     void canUndoChanged(bool canundo);
     void canRedoChanged(bool canredo);
     void dataChanged(const QByteArray& data, quint64 offset,
-                     QHexDocument::ChangeReason reason);
+                     QHexChangeReason reason);
     void changed();
     void reset();
 
 private:
     QHexBuffer* m_buffer;
-    QUndoStack m_undostack;
+    QUndoStack* m_undostack;
+    QHexChanges m_changes;
+    bool m_trackchanges{false};
 
     friend class QHexView;
 };

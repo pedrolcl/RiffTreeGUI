@@ -1,11 +1,12 @@
 #pragma once
 
-#include <qhexview/model/commands/hexcommand.h>
+#include <qhexview/model/commands/hexviewcommand.h>
 
-class RemoveCommand: public HexCommand {
+class QHexViewRemoveCommand: public QHexViewCommand {
 public:
-    RemoveCommand(QHexBuffer* buffer, QHexDocument* document, qint64 offset,
-                  int length, QUndoCommand* parent = nullptr);
+    QHexViewRemoveCommand(QHexBuffer* buffer, const QHexChanges& changes,
+                          QHexDocument* document, qint64 offset, int length,
+                          QUndoCommand* parent = nullptr);
     void undo() override;
     void redo() override;
 };

@@ -13,22 +13,25 @@
  *  where % is modulus, and / is integer division.
  */
 
-QHexCursor::QHexCursor(const QHexOptions* options, QHexView* parent)
-    : QObject(parent), m_options(options) {}
+QHexCursor::QHexCursor(const QHexOptions *options, QHexView *parent)
+    : QObject(parent)
+    , m_options(options)
+{}
 
-QHexView* QHexCursor::hexView() const {
-    return qobject_cast<QHexView*>(this->parent());
+QHexView *QHexCursor::hexView() const
+{
+    return qobject_cast<QHexView *>(this->parent());
 }
 
 QHexCursor::Mode QHexCursor::mode() const { return m_mode; }
 qint64 QHexCursor::offset() const { return this->positionToOffset(m_position); }
 
 qint64 QHexCursor::address() const {
-    return m_options->baseaddress + this->offset();
+    return m_options->base_address + this->offset();
 }
 
 quint64 QHexCursor::lineAddress() const {
-    return m_options->baseaddress + (m_position.line * m_options->linelength);
+    return m_options->base_address + (m_position.line * m_options->line_length);
 }
 
 qint64 QHexCursor::selectionStartOffset() const {

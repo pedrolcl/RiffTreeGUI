@@ -1,6 +1,6 @@
+#include <qhexview/model/buffer/qdevicebuffer.h>
 #include <QIODevice>
 #include <limits>
-#include <qhexview/model/buffer/qdevicebuffer.h>
 
 QDeviceBuffer::QDeviceBuffer(QObject* parent): QHexBuffer{parent} {}
 
