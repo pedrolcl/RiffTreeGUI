@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QScreen>
 
 #include <qhexview/model/buffer/qmemorybuffer.h>
@@ -180,4 +181,23 @@ void MainWindow::createMenus()
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    QStringList types{"dls", "sf2", "sf3", "avi", "wav", "rmi", "cdr", "ani", "pal", "webp"};
+    foreach (const QUrl &url, event->mimeData()->urls()) {
+        QString fname = url.toLocalFile();
+        QFileInfo info(fname);
+        if (info.exists() && types.contains(info.suffix().trimmed(), Qt::CaseInsensitive)) {
+            openFile(fname);
+        }
+    }
 }

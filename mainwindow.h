@@ -6,6 +6,8 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QMainWindow>
 #include <QMenu>
 #include <QSplitter>
@@ -20,6 +22,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     void openFile(const QString fileName);
+
+protected:
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
 
 private slots:
     void open();
