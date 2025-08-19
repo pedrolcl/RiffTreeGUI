@@ -171,6 +171,15 @@ void MainWindow::createActions()
     aboutQtAct = new QAction(aboutQtIcon, tr("About &Qt"), this);
     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
     connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QIcon findIcon = QIcon::fromTheme("edit-find");
+#else
+    QIcon findIcon = QIcon::fromTheme(QIcon::ThemeIcon::EditFind);
+#endif
+    findAct = new QAction(findIcon, tr("Find..."), this);
+    findAct->setStatusTip(tr("Show the Find dialog"));
+    connect(findAct, &QAction::triggered, m_hexview, &QHexView::showFind);
 }
 
 void MainWindow::createMenus()
@@ -179,6 +188,9 @@ void MainWindow::createMenus()
     fileMenu->addAction(openAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
+
+    editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu->addAction(findAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);

@@ -37,12 +37,14 @@ private:
     void createActions();
     void createMenus();
 
+    QMenu *editMenu;
     QMenu *fileMenu;
     QMenu *helpMenu;
     QAction *openAct;
     QAction *exitAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
+    QAction *findAct;
 
     QSplitter *m_splitter;
     QTreeView *m_treeview;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDialog>
-#include <QHexView/model/qhexutils.h>
+#include <qhexview/model/qhexutils.h>
 
 class QRegularExpressionValidator;
 class QDoubleValidator;

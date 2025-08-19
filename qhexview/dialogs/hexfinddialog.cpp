@@ -4,8 +4,6 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <QHexView/dialogs/hexfinddialog.h>
-#include <QHexView/qhexview.h>
 #include <QLabel>
 #include <QLineEdit>
 #include <QList>
@@ -19,6 +17,8 @@
 #include <QStackedLayout>
 #include <QVBoxLayout>
 #include <limits>
+#include <qhexview/dialogs/hexfinddialog.h>
+#include <qhexview/qhexview.h>
 
 const QString HexFindDialog::BUTTONBOX = "qhexview_buttonbox";
 const QString HexFindDialog::CBFINDMODE = "qhexview_cbfindmode";

@@ -30,6 +30,8 @@ add_executable(${PROJECT_NAME}
 # rifftree: https://github.com/jesustorresdev/rifftree (Apache 2.0 license)
     riff.h
 # QHexView: https://github.com/Dax89/QHexView (MIT license)
+    qhexview/dialogs/hexfinddialog.cpp
+    qhexview/dialogs/hexfinddialog.h
     qhexview/model/buffer/qdevicebuffer.cpp
     qhexview/model/buffer/qdevicebuffer.h
     qhexview/model/buffer/qhexbuffer.cpp
@@ -80,6 +82,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
     VERSION=${PROJECT_VERSION}
     PROGRAM=${PROJECT_NAME}
+    QHEXVIEW_ENABLE_DIALOGS
 )
 
 include(GNUInstallDirs)
