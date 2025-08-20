@@ -5,13 +5,11 @@
 #define MAINWINDOW_H
 
 #include <QAction>
-#include <QActionGroup>
 #include <QCloseEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMainWindow>
 #include <QMenu>
-#include <QShowEvent>
 #include <QSplitter>
 #include <QTranslator>
 #include <QTreeView>

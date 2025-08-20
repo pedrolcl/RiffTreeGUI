@@ -3,8 +3,8 @@
 
 #include "mainwindow.h"
 
+#include <QActionGroup>
 #include <QApplication>
-#include <QDebug>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -116,15 +116,13 @@ void MainWindow::updateWindowTitle()
 
 void MainWindow::retranslate()
 {
-    qDebug() << Q_FUNC_INFO << m_currentLang;
     QLocale locale(m_currentLang);
-    qDebug() << "load Qt translator:" << locale.name()
-             << qtTranslator.load(locale, "qt", "_", ":/");
-    QCoreApplication::installTranslator(&qtTranslator);
-
-    qDebug() << "load app translator:" << locale.name()
-             << appTranslator.load(locale, qApp->applicationName(), "_", ":/");
-    QCoreApplication::installTranslator(&appTranslator);
+    if (qtTranslator.load(locale, "qt", "_", ":/")) {
+        QCoreApplication::installTranslator(&qtTranslator);
+    }
+    if (appTranslator.load(locale, qApp->applicationName(), "_", ":/")) {
+        QCoreApplication::installTranslator(&appTranslator);
+    }
     // retranslate the menus
     fileMenu->setTitle(tr("&File"));
     editMenu->setTitle(tr("&Edit"));
@@ -149,12 +147,15 @@ void MainWindow::readSettings()
     if (!geometry.isEmpty()) {
         restoreGeometry(geometry);
     }
-    m_currentLang = settings.value("language").toString();
-    auto allActions = languageMenu->actions();
-    auto it = std::find_if(allActions.begin(), allActions.end(), [=](QAction *action) {
+    auto lang = settings.value("language").toString();
+    if (!lang.isEmpty()) {
+        m_currentLang = lang;
+    }
+    auto lngActions = languageMenu->actions();
+    auto it = std::find_if(lngActions.begin(), lngActions.end(), [=](QAction *action) {
         return action->data().toString() == m_currentLang;
     });
-    if (it != actions().end()) {
+    if (it != lngActions.end()) {
         (*it)->setChecked(true);
     }
     retranslate();
