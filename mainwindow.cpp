@@ -4,14 +4,18 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QLocale>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QScreen>
+#include <QSettings>
+#include <algorithm>
 
 #include <qhexview/model/buffer/qmemorybuffer.h>
 
@@ -40,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_treeview, &QTreeView::clicked, this, &MainWindow::treeItemClicked);
     updateWindowTitle();
+    readSettings();
 }
 
 void MainWindow::openFile(const QString fileName)
@@ -107,6 +112,61 @@ void MainWindow::open()
 void MainWindow::updateWindowTitle()
 {
     setWindowTitle(tr("%1 [%2]").arg(qApp->applicationName()).arg(m_openFileName));
+}
+
+void MainWindow::retranslate()
+{
+    qDebug() << Q_FUNC_INFO << m_currentLang;
+    QLocale locale(m_currentLang);
+    qDebug() << "load Qt translator:" << locale.name()
+             << qtTranslator.load(locale, "qt", "_", ":/");
+    QCoreApplication::installTranslator(&qtTranslator);
+
+    qDebug() << "load app translator:" << locale.name()
+             << appTranslator.load(locale, qApp->applicationName(), "_", ":/");
+    QCoreApplication::installTranslator(&appTranslator);
+    // retranslate the menus
+    fileMenu->setTitle(tr("&File"));
+    editMenu->setTitle(tr("&Edit"));
+    helpMenu->setTitle(tr("&Help"));
+    languageMenu->setTitle(tr("&Language"));
+    openAct->setText(tr("&Open..."));
+    openAct->setStatusTip(tr("Open an existing file"));
+    exitAct->setText(tr("E&xit"));
+    exitAct->setStatusTip(tr("Exit the application"));
+    aboutAct->setText(tr("&About"));
+    aboutAct->setStatusTip(tr("Show the application's About box"));
+    aboutQtAct->setText(tr("About &Qt"));
+    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+    findAct->setText(tr("Find..."));
+    findAct->setStatusTip(tr("Show the Find dialog"));
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings;
+    QByteArray geometry = settings.value("geometry").toByteArray();
+    if (!geometry.isEmpty()) {
+        restoreGeometry(geometry);
+    }
+    m_currentLang = settings.value("language").toString();
+    auto allActions = languageMenu->actions();
+    auto it = std::find_if(allActions.begin(), allActions.end(), [=](QAction *action) {
+        return action->data().toString() == m_currentLang;
+    });
+    if (it != actions().end()) {
+        (*it)->setChecked(true);
+    }
+    retranslate();
+}
+
+void MainWindow::changeLanguage()
+{
+    auto action = qobject_cast<QAction *>(sender());
+    if (action) {
+        m_currentLang = action->data().toString();
+        retranslate();
+    }
 }
 
 void MainWindow::about()
@@ -193,8 +253,23 @@ void MainWindow::createMenus()
     editMenu->addAction(findAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
+    languageMenu = helpMenu->addMenu(tr("&Language"));
+    auto langGroup = new QActionGroup(this);
+    langGroup->setExclusive(true);
+    auto enAct = languageMenu->addAction("English"); // Native name, do not translate
+    enAct->setData("en_US");
+    enAct->setCheckable(true);
+    enAct->setActionGroup(langGroup);
+    auto esAct = languageMenu->addAction("español"); // Native name, do not translate
+    esAct->setData("es_ES");
+    esAct->setCheckable(true);
+    esAct->setActionGroup(langGroup);
+
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
+
+    connect(enAct, &QAction::triggered, this, &MainWindow::changeLanguage);
+    connect(esAct, &QAction::triggered, this, &MainWindow::changeLanguage);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -214,4 +289,12 @@ void MainWindow::dropEvent(QDropEvent *event)
             openFile(fname);
         }
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings;
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("language", m_currentLang);
+    QMainWindow::closeEvent(event);
 }

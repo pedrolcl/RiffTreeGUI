@@ -8,6 +8,8 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setOrganizationName("RiffTreeGUI");
+    QCoreApplication::setOrganizationDomain("pedrolcl.github.io");
     QCoreApplication::setApplicationName(QT_STRINGIFY(PROGRAM));
     QCoreApplication::setApplicationVersion(QT_STRINGIFY(VERSION));
 

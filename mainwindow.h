@@ -6,11 +6,14 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QCloseEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMainWindow>
 #include <QMenu>
+#include <QShowEvent>
 #include <QSplitter>
+#include <QTranslator>
 #include <QTreeView>
 #include <qhexview/qhexview.h>
 
@@ -26,20 +29,25 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void open();
     void about();
     void treeItemClicked(const QModelIndex &index);
     void updateWindowTitle();
+    void changeLanguage();
 
 private:
     void createActions();
     void createMenus();
+    void retranslate();
+    void readSettings();
 
     QMenu *editMenu;
     QMenu *fileMenu;
     QMenu *helpMenu;
+    QMenu *languageMenu;
     QAction *openAct;
     QAction *exitAct;
     QAction *aboutAct;
@@ -54,6 +62,9 @@ private:
     QHexDocument *m_hexdoc{nullptr};
 
     QString m_openFileName;
+    QString m_currentLang{"en_US"};
+    QTranslator appTranslator;
+    QTranslator qtTranslator;
 };
 
 #endif // MAINWINDOW_H

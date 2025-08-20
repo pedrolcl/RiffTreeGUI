@@ -11,12 +11,29 @@ project(RiffTree
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
+
+set(TS_FILES
+    ${PROJECT_NAME}_en.ts
+    ${PROJECT_NAME}_es.ts
+)
+
+if (QT_VERSION VERSION_LESS 5.15.0)
+    qt5_add_translation(QM_FILES ${TS_FILES})
+else()
+    qt_add_translation(QM_FILES ${TS_FILES})
+endif()
+
+include(TranslationUtils)
+add_app_translations_resource(APP_RES ${QM_FILES})
+add_qt_translations_resource(QT_RES en es)
 
 add_executable(${PROJECT_NAME}
     main.cpp
@@ -64,9 +81,10 @@ add_executable(${PROJECT_NAME}
     qhexview/model/qhexutils.h
     qhexview/qhexview.cpp
     qhexview/qhexview.h
+# embedded translations
+    ${APP_RES}
+    ${QT_RES}
 )
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     WIN32_EXECUTABLE TRUE
