@@ -15,6 +15,7 @@
 #include <QMimeData>
 #include <QScreen>
 #include <QSettings>
+#include <QStatusBar>
 #include <algorithm>
 
 #include "QHexView/model/buffer/qmemorybuffer.h"
@@ -33,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_splitter->addWidget(m_hexview);
     m_splitter->setSizes({333, 666});
     setCentralWidget(m_splitter);
+    statusBar()->setSizeGripEnabled(true);
 
     createActions();
     createMenus();
@@ -257,12 +259,14 @@ void MainWindow::createMenus()
     languageMenu = helpMenu->addMenu(tr("&Language"));
     auto langGroup = new QActionGroup(this);
     langGroup->setExclusive(true);
-    auto enAct = languageMenu->addAction("English"); // Native name, do not translate
-    enAct->setData("en_US");
+    auto enAct = languageMenu->addAction(
+        QStringLiteral(u"English")); // Native name, do not translate
+    enAct->setData(QLatin1String("en_US"));
     enAct->setCheckable(true);
     enAct->setActionGroup(langGroup);
-    auto esAct = languageMenu->addAction("español"); // Native name, do not translate
-    esAct->setData("es_ES");
+    auto esAct = languageMenu->addAction(
+        QStringLiteral(u"español")); // Native name, do not translate
+    esAct->setData(QLatin1String("es_ES"));
     esAct->setCheckable(true);
     esAct->setActionGroup(langGroup);
 
