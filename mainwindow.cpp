@@ -17,7 +17,7 @@
 #include <QSettings>
 #include <algorithm>
 
-#include <qhexview/model/buffer/qmemorybuffer.h>
+#include "QHexView/model/buffer/qmemorybuffer.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}

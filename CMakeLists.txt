@@ -47,40 +47,40 @@ add_executable(${PROJECT_NAME}
 # rifftree: https://github.com/jesustorresdev/rifftree (Apache 2.0 license)
     riff.h
 # QHexView: https://github.com/Dax89/QHexView (MIT license)
-    qhexview/dialogs/hexfinddialog.cpp
-    qhexview/dialogs/hexfinddialog.h
-    qhexview/model/buffer/qdevicebuffer.cpp
-    qhexview/model/buffer/qdevicebuffer.h
-    qhexview/model/buffer/qhexbuffer.cpp
-    qhexview/model/buffer/qhexbuffer.h
-    qhexview/model/buffer/qmappedfilebuffer.cpp
-    qhexview/model/buffer/qmappedfilebuffer.h
-    qhexview/model/buffer/qmemorybuffer.cpp
-    qhexview/model/buffer/qmemorybuffer.h
-    qhexview/model/buffer/qmemoryrefbuffer.cpp
-    qhexview/model/buffer/qmemoryrefbuffer.h
-    qhexview/model/commands/hexviewcommand.cpp
-    qhexview/model/commands/hexviewcommand.h
-    qhexview/model/commands/insertcommand.cpp
-    qhexview/model/commands/insertcommand.h
-    qhexview/model/commands/removecommand.cpp
-    qhexview/model/commands/removecommand.h
-    qhexview/model/commands/replacecommand.cpp
-    qhexview/model/commands/replacecommand.h
-    qhexview/model/qhexchanges.h
-    qhexview/model/qhexcursor.cpp
-    qhexview/model/qhexcursor.h
-    qhexview/model/qhexdelegate.cpp
-    qhexview/model/qhexdelegate.h
-    qhexview/model/qhexdocument.cpp
-    qhexview/model/qhexdocument.h
-    qhexview/model/qhexmetadata.cpp
-    qhexview/model/qhexmetadata.h
-    qhexview/model/qhexoptions.h
-    qhexview/model/qhexutils.cpp
-    qhexview/model/qhexutils.h
-    qhexview/qhexview.cpp
-    qhexview/qhexview.h
+    qhexview/include/QHexView/dialogs/hexfinddialog.h
+    qhexview/include/QHexView/model/buffer/qdevicebuffer.h
+    qhexview/include/QHexView/model/buffer/qhexbuffer.h
+    qhexview/include/QHexView/model/buffer/qmappedfilebuffer.h
+    qhexview/include/QHexView/model/buffer/qmemorybuffer.h
+    qhexview/include/QHexView/model/buffer/qmemoryrefbuffer.h
+    qhexview/include/QHexView/model/commands/hexviewcommand.h
+    qhexview/include/QHexView/model/commands/insertcommand.h
+    qhexview/include/QHexView/model/commands/removecommand.h
+    qhexview/include/QHexView/model/commands/replacecommand.h
+    qhexview/include/QHexView/model/qhexchanges.h
+    qhexview/include/QHexView/model/qhexcursor.h
+    qhexview/include/QHexView/model/qhexdelegate.h
+    qhexview/include/QHexView/model/qhexdocument.h
+    qhexview/include/QHexView/model/qhexmetadata.h
+    qhexview/include/QHexView/model/qhexoptions.h
+    qhexview/include/QHexView/model/qhexutils.h
+    qhexview/include/QHexView/qhexview.h
+    qhexview/src/dialogs/hexfinddialog.cpp
+    qhexview/src/model/buffer/qdevicebuffer.cpp
+    qhexview/src/model/buffer/qhexbuffer.cpp
+    qhexview/src/model/buffer/qmappedfilebuffer.cpp
+    qhexview/src/model/buffer/qmemorybuffer.cpp
+    qhexview/src/model/buffer/qmemoryrefbuffer.cpp
+    qhexview/src/model/commands/hexviewcommand.cpp
+    qhexview/src/model/commands/insertcommand.cpp
+    qhexview/src/model/commands/removecommand.cpp
+    qhexview/src/model/commands/replacecommand.cpp
+    qhexview/src/model/qhexcursor.cpp
+    qhexview/src/model/qhexdelegate.cpp
+    qhexview/src/model/qhexdocument.cpp
+    qhexview/src/model/qhexmetadata.cpp
+    qhexview/src/model/qhexutils.cpp
+    qhexview/src/qhexview.cpp
 # embedded translations
     ${APP_RES}
     ${QT_RES}
@@ -101,6 +101,10 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
     VERSION=${PROJECT_VERSION}
     PROGRAM=${PROJECT_NAME}
     QHEXVIEW_ENABLE_DIALOGS
+)
+
+target_include_directories( ${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/qhexview/include
 )
 
 include(GNUInstallDirs)

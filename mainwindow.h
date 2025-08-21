@@ -13,8 +13,8 @@
 #include <QSplitter>
 #include <QTranslator>
 #include <QTreeView>
-#include <qhexview/qhexview.h>
 
+#include "QHexView/qhexview.h"
 #include "treemodel.h"
 
 class MainWindow : public QMainWindow
