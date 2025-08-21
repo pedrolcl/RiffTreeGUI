@@ -163,12 +163,15 @@ void MainWindow::readSettings()
     retranslate();
 }
 
-void MainWindow::changeLanguage()
+void MainWindow::changeLanguage(QAction *action)
 {
-    auto action = qobject_cast<QAction *>(sender());
     if (action) {
         m_currentLang = action->data().toString();
         retranslate();
+        QMessageBox::information(this,
+                                 tr("Program Translation"),
+                                 tr("Please restart the program\n"
+                                    "to complete the translation."));
     }
 }
 
@@ -257,24 +260,23 @@ void MainWindow::createMenus()
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     languageMenu = helpMenu->addMenu(tr("&Language"));
-    auto langGroup = new QActionGroup(this);
-    langGroup->setExclusive(true);
-    auto enAct = languageMenu->addAction(
+
+    auto languageGroup = new QActionGroup(this);
+    languageGroup->setExclusive(true);
+    auto enAct = languageGroup->addAction(
         QStringLiteral(u"English")); // Native name, do not translate
     enAct->setData(QLatin1String("en_US"));
     enAct->setCheckable(true);
-    enAct->setActionGroup(langGroup);
-    auto esAct = languageMenu->addAction(
+    auto esAct = languageGroup->addAction(
         QStringLiteral(u"español")); // Native name, do not translate
     esAct->setData(QLatin1String("es_ES"));
     esAct->setCheckable(true);
-    esAct->setActionGroup(langGroup);
+    connect(languageGroup, &QActionGroup::triggered, this, &MainWindow::changeLanguage);
 
+    languageMenu->addActions(languageGroup->actions());
+    helpMenu->addSeparator();
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
-
-    connect(enAct, &QAction::triggered, this, &MainWindow::changeLanguage);
-    connect(esAct, &QAction::triggered, this, &MainWindow::changeLanguage);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)

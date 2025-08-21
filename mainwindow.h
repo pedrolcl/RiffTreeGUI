@@ -34,7 +34,7 @@ private slots:
     void about();
     void treeItemClicked(const QModelIndex &index);
     void updateWindowTitle();
-    void changeLanguage();
+    void changeLanguage(QAction *action);
 
 private:
     void createActions();
