@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(RiffTree
     LANGUAGES CXX
-    VERSION 1.0
+    VERSION 1.0.0
 )
 
 set(CMAKE_CXX_STANDARD 14)
@@ -121,11 +121,14 @@ if (UNIX AND NOT APPLE)
     install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.desktop
              DESTINATION ${CMAKE_INSTALL_DATADIR}/applications )
 
+    message(STATUS "DESTDIR: $ENV{DESTDIR}" )
     # AppDir symlinks
-    string(REPLACE "/" "" RELPREF ${CMAKE_INSTALL_PREFIX})
-    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME} $ENV{DESTDIR}/AppRun)")
-    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/applications/${PROJECT_NAME}.desktop $ENV{DESTDIR}/${PROJECT_NAME}.desktop)")
-    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/${PROJECT_NAME}.png $ENV{DESTDIR}/${PROJECT_NAME}.png)")
+    if (NOT DEFINED ENV{GITHUB_OUTPUT})
+        string(REPLACE "/" "" RELPREF ${CMAKE_INSTALL_PREFIX})
+        install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME} $ENV{DESTDIR}/AppRun)")
+        install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/applications/${PROJECT_NAME}.desktop $ENV{DESTDIR}/${PROJECT_NAME}.desktop)")
+        install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/${PROJECT_NAME}.png $ENV{DESTDIR}/${PROJECT_NAME}.png)")
+    endif()
 endif()
 
 if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
@@ -136,6 +139,13 @@ if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
         NO_UNSUPPORTED_PLATFORM_ERROR
     )
     install(SCRIPT ${deploy_script})
+endif()
+
+if (DEFINED ENV{GITHUB_OUTPUT})
+    file(APPEND
+        "$ENV{GITHUB_OUTPUT}"
+        "config_version=${PROJECT_VERSION}\n"
+    )
 endif()
 
 # CPack support
