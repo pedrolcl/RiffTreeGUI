@@ -11,11 +11,13 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: RelWithDebInfo
   INSTALL_LOCATION: RiffTree-1.0.0-x86_64.AppDir
-  DESTDIR: ${{env.INSTALL_LOCATION}}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      DESTDIR: ${{env.INSTALL_LOCATION}}
 
     steps:
     - uses: actions/checkout@v6
