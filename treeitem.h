@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Pedro López-Cabanillas
+// Copyright (C) 2025-2026 Pedro López-Cabanillas
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-or-later
 

@@ -1,5 +1,5 @@
 // Copyright (C) 2013 Jesús Torres <jmtorres@ull.es>
-// Copyright (C) 2025 Pedro López-Cabanillas <plcl@users.sf.net>
+// Copyright (C) 2025-2026 Pedro López-Cabanillas <plcl@users.sf.net>
 // SPDX-License-Identifier: Apache-2.0
 
 /*

@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Pedro López-Cabanillas
+# Copyright (C) 2025-2026 Pedro López-Cabanillas
 # SPDX-License-Identifier:  GPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.16)
@@ -114,11 +114,47 @@ install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
+if (UNIX AND NOT APPLE)
+    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.png
+	     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps )
+
+    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.desktop
+	     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications )
+
+    # AppDir symlinks
+    string(REPLACE "/" "" RELPREF ${CMAKE_INSTALL_PREFIX})
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME} $ENV{DESTDIR}/AppRun)")
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/applications/${PROJECT_NAME}.desktop $ENV{DESTDIR}/${PROJECT_NAME}.desktop)")
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/${PROJECT_NAME}.png $ENV{DESTDIR}/${PROJECT_NAME}.png)")
+endif()
+
 if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
     qt_generate_deploy_app_script(
         TARGET ${PROJECT_NAME}
         OUTPUT_SCRIPT deploy_script
+        NO_TRANSLATIONS
         NO_UNSUPPORTED_PLATFORM_ERROR
     )
     install(SCRIPT ${deploy_script})
 endif()
+
+# CPack support
+set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "RiffTree GUI" )
+set ( CPACK_PACKAGE_VENDOR "https://github.com/pedrolcl/RiffTreeGUI" )
+set ( CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/README.md" )
+set ( CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE" )
+set ( CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR} )
+set ( CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR} )
+set ( CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH} )
+set ( CPACK_PACKAGE_EXECUTABLES "${PROJECT-NAME};RiffTree GUI" )
+
+# source packages
+set ( CPACK_SOURCE_IGNORE_FILES "/.git/;/build/;~$;${CPACK_SOURCE_IGNORE_FILES}" )
+set ( CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT-NAME}-${PROJECT_VERSION}" )
+set ( CPACK_SOURCE_STRIP_FILES OFF )
+
+# binary packages
+set ( CPACK_PACKAGE_NAME ${PROJECT-NAME} )
+set ( CPACK_STRIP_FILES ON )
+
+include ( CPack )

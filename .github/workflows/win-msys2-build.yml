@@ -1,0 +1,90 @@
+name: Windows MSYS2 CI
+
+on:
+  push:
+    branches: [ "devel", "main" ]
+  pull_request:
+    branches: [ "devel", "main" ]
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+  INSTALL_LOCATION: RiffTree
+
+jobs:
+  build:
+    strategy:
+        fail-fast: false
+        matrix:
+          include:
+            - { icon: '🟦', sys: mingw64,    os: windows-latest }
+            - { icon: '🟨', sys: ucrt64,     os: windows-latest }
+            - { icon: '🟧', sys: clang64,    os: windows-latest }
+            - { icon: '🟩', sys: clangarm64, os: windows-11-arm }
+    runs-on: ${{ matrix.os }}
+    name: 🚧${{ matrix.icon }} ${{ matrix.sys }}
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+    - name: '${{ matrix.icon }} Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        release: true
+        update: true
+        msystem: ${{matrix.sys}}
+        install: >-
+          git
+          make
+        pacboy: >-
+          toolchain:p
+          cmake:p
+          ninja:p
+          qt6-base:p
+          qt6-tools:p
+          qt6-translations:p
+
+    - name: '${{ matrix.icon }} Install NSIS'
+      uses: repolevedavaj/install-nsis@v1.1.0
+      with:
+        nsis-version: '3.11'
+
+    - name: '${{ matrix.icon }} Checkout'
+      uses: actions/checkout@v4
+
+    - name: '${{ matrix.icon }} Configure CMake'
+      id: configuration
+      run: >
+        cmake -B build
+        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_LOCATION}}
+        -DCPACK_SYSTEM_NAME=${{matrix.sys}}
+
+    - name: '${{ matrix.icon }} Build'
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+    - name: '${{ matrix.icon }} Package'
+      run: cmake --build build --target package
+
+    - name: '${{ matrix.icon }} Install'
+      run: cmake --install build --config ${{env.BUILD_TYPE}}
+
+    - name: '${{ matrix.icon }} Create Archive'
+      run: tar cvf ${{env.INSTALL_LOCATION}}.tar ${{env.INSTALL_LOCATION}}
+
+    - name: '${{ matrix.icon }} Upload Artifacts'
+      uses: actions/upload-artifact@v6
+      with:
+        name: ${{env.INSTALL_LOCATION}}-msys2-${{matrix.sys}}
+        path: ${{env.INSTALL_LOCATION}}.tar
+        retention-days: 90
+        overwrite: true
+
+    - name: '${{ matrix.icon }} Upload Installer'
+      uses: actions/upload-artifact@v6
+      with:
+        name: rifftree-installer-${{matrix.sys}}
+        path: ${{github.workspace}}/build/rifftree-${{steps.configuration.outputs.config_version}}-${{matrix.sys}}.exe
+        retention-days: 90
+        overwrite: true

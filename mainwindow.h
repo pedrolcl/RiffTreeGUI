@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Pedro López-Cabanillas
+// Copyright (C) 2025-2026 Pedro López-Cabanillas
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef MAINWINDOW_H
