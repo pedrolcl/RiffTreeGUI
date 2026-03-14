@@ -10,7 +10,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: RelWithDebInfo
-  INSTALL_LOCATION: RiffTree
+  INSTALL_LOCATION: RiffTree-1.0.0-x86_64.AppDir
 
 jobs:
   build:
@@ -29,17 +29,18 @@ jobs:
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        -DCMAKE_INSTALL_PREFIX=/usr
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Install
-      run: cmake --install build --config ${{env.BUILD_TYPE}}
+      run: DESTDIR=${{env.INSTALL_LOCATION}} cmake --install build --config ${{env.BUILD_TYPE}}
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v7
       with:
-        name: ${{env.INSTALL_LOCATION}}-Linux
+        name: ${{env.INSTALL_LOCATION}}
         path: ${{env.INSTALL_LOCATION}}
         retention-days: 90
         overwrite: true
