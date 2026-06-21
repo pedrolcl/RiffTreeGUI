@@ -9,24 +9,23 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
-  # INSTALL_LOCATION: RiffTree-1.0.0-x86_64.AppDir
-  # DESTDIR: RiffTree-1.0.0-x86_64.AppDir
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v4
       with:
-        version: '6.10.*'
+        version: '6.11.*'
 
     - name: Configure CMake
+      id: configuration
       run: cmake -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DCMAKE_INSTALL_PREFIX=/usr
@@ -34,13 +33,17 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    # - name: Install
-    #   run: cmake --install build --config ${{env.BUILD_TYPE}}
+    - name: Install
+      env:
+        DESTDIR: RiffTree-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
+      run: cmake --install build --config ${{env.BUILD_TYPE}}
 
-    # - name: Upload Artifacts
-    #   uses: actions/upload-artifact@v7
-    #   with:
-    #     name: ${{env.INSTALL_LOCATION}}
-    #     path: ${{env.INSTALL_LOCATION}}
-    #     retention-days: 90
-    #     overwrite: true
+    - name: Upload Artifacts
+      env:
+        INSTALL_LOCATION: RiffTree-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{env.INSTALL_LOCATION}}
+        path: ${{env.INSTALL_LOCATION}}
+        retention-days: 90
+        overwrite: true

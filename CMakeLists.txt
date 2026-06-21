@@ -117,13 +117,13 @@ install(TARGETS ${PROJECT_NAME}
 if (UNIX AND NOT APPLE)
     install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.png
              DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps )
-
     install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.desktop
              DESTINATION ${CMAKE_INSTALL_DATADIR}/applications )
-
-    message(STATUS "DESTDIR: $ENV{DESTDIR}" )
+    message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
     # AppDir symlinks
-    if (NOT DEFINED ENV{GITHUB_OUTPUT})
+    if (DEFINED ENV{DESTDIR})
+        file(MAKE_DIRECTORY $ENV{DESTDIR})
+        message(STATUS "DESTDIR: $ENV{DESTDIR} PREFIX: ${CMAKE_INSTALL_PREFIX}" )
         string(REPLACE "/" "" RELPREF ${CMAKE_INSTALL_PREFIX})
         install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME} $ENV{DESTDIR}/AppRun)")
         install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/applications/${PROJECT_NAME}.desktop $ENV{DESTDIR}/${PROJECT_NAME}.desktop)")
