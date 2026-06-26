@@ -86,6 +86,13 @@ add_executable(${PROJECT_NAME}
     ${QT_RES}
 )
 
+if (WIN32)
+    configure_file(${PROJECT_NAME}.rc.in ${PROJECT_NAME}.rc @ONLY)
+    target_sources ( ${PROJECT_NAME} PUBLIC
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc
+    )
+endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
     WIN32_EXECUTABLE TRUE
     MACOSX_BUNDLE TRUE
@@ -132,12 +139,23 @@ if (UNIX AND NOT APPLE)
 endif()
 
 if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
-    qt_generate_deploy_app_script(
-        TARGET ${PROJECT_NAME}
-        OUTPUT_SCRIPT deploy_script
-        NO_TRANSLATIONS
-        NO_UNSUPPORTED_PLATFORM_ERROR
-    )
+    if(MSVC)
+        qt_generate_deploy_app_script(
+            TARGET ${PROJECT_NAME}
+            OUTPUT_SCRIPT deploy_script
+            NO_UNSUPPORTED_PLATFORM_ERROR
+            NO_COMPILER_RUNTIME
+            NO_TRANSLATIONS
+        )
+        include ( InstallRequiredSystemLibraries )
+    else()
+        qt_generate_deploy_app_script(
+            TARGET ${PROJECT_NAME}
+            OUTPUT_SCRIPT deploy_script
+            NO_UNSUPPORTED_PLATFORM_ERROR
+            NO_TRANSLATIONS
+        )
+    endif()
     install(SCRIPT ${deploy_script})
 endif()
 
@@ -149,6 +167,7 @@ if (DEFINED ENV{GITHUB_OUTPUT})
 endif()
 
 # CPack support
+set ( CPACK_SYSTEM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
 set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "RiffTree GUI" )
 set ( CPACK_PACKAGE_VENDOR "https://github.com/pedrolcl/RiffTreeGUI" )
 set ( CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/README.md" )
@@ -156,7 +175,7 @@ set ( CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE" )
 set ( CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR} )
 set ( CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR} )
 set ( CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH} )
-set ( CPACK_PACKAGE_EXECUTABLES "${PROJECT-NAME}" "${PROJECT-NAME}" )
+set ( CPACK_PACKAGE_EXECUTABLES "RiffTree" "RiffTree GUI Viewer" )
 
 # source packages
 set ( CPACK_SOURCE_IGNORE_FILES "/.git/;/build/;~$;${CPACK_SOURCE_IGNORE_FILES}" )

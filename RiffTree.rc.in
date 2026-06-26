@@ -1,0 +1,29 @@
+IDI_ICON1 ICON DISCARDABLE "@CMAKE_CURRENT_SOURCE_DIR@/RiffTree.ico"
+
+1 VERSIONINFO
+ FILEVERSION    @PROJECT_VERSION_MAJOR@, @PROJECT_VERSION_MINOR@, @PROJECT_VERSION_PATCH@
+ PRODUCTVERSION @PROJECT_VERSION_MAJOR@, @PROJECT_VERSION_MINOR@, @PROJECT_VERSION_PATCH@, 0
+ FILEOS         4 // VOS__WINDOWS32
+ FILETYPE       1 // VFT_APP         
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "io.github.pedrolcl.RiffTree"
+      VALUE "FileDescription", "Riff File Viewer"
+      VALUE "FileVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+      VALUE "Full Version", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.0"
+      VALUE "InternalName", "RiffTree"
+      VALUE "LegalCopyright", "Copyright \251 2025-2026 Pedro Lopez-Cabanillas. Licensed under the terms of the GPL v3 or later"
+      VALUE "OriginalFilename", "RiffTree.exe"
+      VALUE "ProductName", "RiffTree"
+      VALUE "ProductVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0409, 1200, // U.S. English
+                         0x040A, 1200  // Castilian Spanish
+  END
+END
