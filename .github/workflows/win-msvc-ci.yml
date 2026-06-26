@@ -1,0 +1,78 @@
+name: Windows MSVC CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master", "develop" ]
+  pull_request:
+    branches: [ "master", "develop" ]
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+  INSTALL_LOCATION: ${{github.workspace}}/RiffTree
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { icon: '🟦', arch: "win64", os: "windows-latest", triplet: "x64-windows" }
+          - { icon: '🟩', arch: "arm64", os: "windows-11-arm", triplet: "arm64-windows" }
+    runs-on: ${{ matrix.os }}
+    name: 🚧${{ matrix.icon }} msvc ${{ matrix.arch }}
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: true
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.10.*'
+        target: 'desktop'
+        use-official: true
+
+    - name: '${{ matrix.icon }} Install NSIS'
+      uses: repolevedavaj/install-nsis@v1.2.1
+      with:
+        nsis-version: '3.11'
+
+    - name: '${{ matrix.icon }} Setup MSVC'
+      uses: TheMrMilchmann/setup-msvc-dev@v4
+      with:
+        arch: ${{ matrix.arch }}
+
+    - name: '${{ matrix.icon }} Configure CMake'
+      id: configuration
+      run: >
+        cmake -G Ninja -B ${{github.workspace}}/build
+        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_LOCATION}}
+        -DCPACK_SYSTEM_NAME=${{matrix.arch}}
+
+    - name: '${{ matrix.icon }} Build'
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: '${{ matrix.icon }} Package'
+      run: cmake --build ${{github.workspace}}/build --target package
+
+    - name: '${{ matrix.icon }} Install'
+      run: cmake --install ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: '${{ matrix.icon }} Upload Artifacts'
+      uses: actions/upload-artifact@v7
+      with:
+        name: RiffTree-msvc-${{matrix.arch}}
+        path: ${{env.INSTALL_LOCATION}}
+        retention-days: 90
+        overwrite: true
+
+    - name: '${{ matrix.icon }} Upload Installer'
+      uses: actions/upload-artifact@v7
+      with:
+        name: RiffTree-msvc-installer-${{matrix.arch}}
+        path: ${{github.workspace}}/build/RiffTree-${{steps.configuration.outputs.config_version}}-Windows-*.exe
+        retention-days: 90
+        overwrite: true

@@ -66,8 +66,8 @@ jobs:
     - name: '${{ matrix.icon }} Build'
       run: cmake --build build --config ${{env.BUILD_TYPE}}
 
-    - name: '${{ matrix.icon }} Package'
-      run: cmake --build build --target package
+    # - name: '${{ matrix.icon }} Package'
+    #   run: cmake --build build --target package
 
     - name: '${{ matrix.icon }} Install'
       run: cmake --install build --config ${{env.BUILD_TYPE}}
@@ -80,10 +80,10 @@ jobs:
         retention-days: 90
         overwrite: true
 
-    - name: '${{ matrix.icon }} Upload Installer'
-      uses: actions/upload-artifact@v7
-      with:
-        name: rifftree-installer-${{matrix.sys}}
-        path: ${{github.workspace}}/build/RiffTree-${{steps.configuration.outputs.config_version}}-${{matrix.sys}}.exe
-        retention-days: 90
-        overwrite: true
+    # - name: '${{ matrix.icon }} Upload Installer'
+    #   uses: actions/upload-artifact@v7
+    #   with:
+    #     name: rifftree-installer-${{matrix.sys}}
+    #     path: ${{github.workspace}}/build/RiffTree-${{steps.configuration.outputs.config_version}}-${{matrix.sys}}.exe
+    #     retention-days: 90
+    #     overwrite: true
