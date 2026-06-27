@@ -1,7 +1,7 @@
 # RiffTreeGUI
 A GUI application to show the tree structure of a [RIFF file](https://en.wikipedia.org/wiki/Resource_Interchange_File_Format).
 
-![logo](RiffTree.png)
+![logo](images/RiffTree.png)
 
 This has been possible thanks to the following projects:
 
@@ -10,7 +10,7 @@ This has been possible thanks to the following projects:
 
 ## Screenshot
 
-![Screenshot](screenshot.png)
+![Screenshot](images/screenshot.png)
 
 ## License
 

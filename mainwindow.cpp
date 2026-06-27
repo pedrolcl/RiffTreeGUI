@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
 
-    setWindowIcon(QIcon(":/RiffTree.png"));
+    setWindowIcon(QIcon(":/images/RiffTree.png"));
     setMinimumSize(666, 666);
     const auto screenSize = screen()->availableSize();
     resize({screenSize.width() / 2, screenSize.height() * 2 / 3});
@@ -113,7 +113,7 @@ void MainWindow::open()
 
 void MainWindow::updateWindowTitle()
 {
-    setWindowTitle(tr("%1 [%2]").arg(qApp->applicationName()).arg(m_openFileName));
+    setWindowTitle(tr("%1 [%2]").arg(qApp->applicationName(), m_openFileName));
 }
 
 void MainWindow::retranslate()
@@ -259,7 +259,9 @@ void MainWindow::createMenus()
     editMenu->addAction(findAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
-    languageMenu = helpMenu->addMenu(tr("&Language"));
+
+    QIcon langIcon(":/images/language.svg");
+    languageMenu = helpMenu->addMenu(langIcon, tr("&Language"));
 
     auto languageGroup = new QActionGroup(this);
     languageGroup->setExclusive(true);

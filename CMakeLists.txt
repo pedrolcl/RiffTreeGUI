@@ -21,8 +21,8 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
 
 set(TS_FILES
-    ${PROJECT_NAME}_en.ts
-    ${PROJECT_NAME}_es.ts
+    translations/${PROJECT_NAME}_en.ts
+    translations/${PROJECT_NAME}_es.ts
 )
 
 if (QT_VERSION VERSION_LESS 5.15.0)

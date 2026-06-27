@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>RiffTree.png</file>
+        <file>images/language.svg</file>
+        <file>images/RiffTree.png</file>
     </qresource>
 </RCC>
