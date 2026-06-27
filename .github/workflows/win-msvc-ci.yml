@@ -3,9 +3,9 @@ name: Windows MSVC CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "devel", "main" ]
   pull_request:
-    branches: [ "master", "develop" ]
+    branches: [ "devel", "main" ]
 
 env:
   BUILD_TYPE: RelWithDebInfo

@@ -122,7 +122,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 if (UNIX AND NOT APPLE)
-    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.png
+    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/images/RiffTree.png
              DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps )
     install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.desktop
              DESTINATION ${CMAKE_INSTALL_DATADIR}/applications )
