@@ -17,8 +17,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { icon: '🟦', arch: "win64", os: "windows-latest", triplet: "x64-windows" }
-          - { icon: '🟩', arch: "arm64", os: "windows-11-arm", triplet: "arm64-windows" }
+          - { icon: '🟦', arch: "win64", os: "windows-latest" }
+          - { icon: '🟩', arch: "arm64", os: "windows-11-arm" }
     runs-on: ${{ matrix.os }}
     name: 🚧${{ matrix.icon }} msvc ${{ matrix.arch }}
 
@@ -27,7 +27,7 @@ jobs:
       with:
         submodules: true
 
-    - name: Install Qt
+    - name: '${{ matrix.icon }} Install Qt'
       uses: jurplel/install-qt-action@v4
       with:
         version: '6.10.*'

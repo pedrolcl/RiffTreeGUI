@@ -12,39 +12,46 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { icon: '🟥', arch: "x86_64", os: "ubuntu-24.04" }
+          - { icon: '🟩', arch: "arm64",  os: "ubuntu-24.04-arm" }
+    runs-on: ${{ matrix.os }}
+    name: 🚧${{ matrix.icon }} ${{ matrix.arch }}
 
     steps:
     - uses: actions/checkout@v7
       with:
         submodules: true
 
-    - name: Install Qt
+    - name: '${{ matrix.icon }} Install Qt'
       uses: jurplel/install-qt-action@v4
       with:
         version: '6.11.*'
 
-    - name: Configure CMake
+    - name: '${{ matrix.icon }} Configure CMake'
       id: configuration
       run: cmake -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DCMAKE_INSTALL_PREFIX=/usr
         -DCMAKE_INSTALL_LIBDIR=lib
 
-    - name: Build
+    - name: '${{ matrix.icon }} Build'
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Install
+    - name: '${{ matrix.icon }} Install'
       env:
-        DESTDIR: ${{github.workspace}}/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
+        DESTDIR: ${{github.workspace}}/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppDir
       run: cmake --install build --config ${{env.BUILD_TYPE}}
 
-    - name: Upload Artifacts
+    - name: '${{ matrix.icon }} Upload Artifacts'
       env:
-        INSTALL_LOCATION: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
+        INSTALL_LOCATION: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppDir
       uses: actions/upload-artifact@v7
       with:
-        name: ${{env.INSTALL_LOCATION}}
+        name: ${{env.INSTALL_LOCATION}}-${{matrix.arch}}
         path: ${{github.workspace}}/${{env.INSTALL_LOCATION}}
         retention-days: 90
         overwrite: true
