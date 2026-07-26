@@ -1,12 +1,12 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Name=RiffTree
+Name=RiffTreeGUI
 Comment=RiffTree GUI Viewer
-Exec=RiffTree %f
+Exec=RiffTreeGUI %f
 Icon=RiffTree
 Terminal=false
 Type=Application
 Categories=Qt;Utility;AudioVideo;Viewer;
 Keywords=Riff;Viewer;
 MimeType=application/octet-stream;application/x-riff;audio/dls;video/avi;audio/x-wav;audio/wav;audio/x-soundfont;
-StartupWMClass=RiffTree
+StartupWMClass=RiffTreeGUI
