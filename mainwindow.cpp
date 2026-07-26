@@ -1,8 +1,6 @@
 // Copyright (C) 2025-2026 Pedro López-Cabanillas
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "mainwindow.h"
-
 #include <QActionGroup>
 #include <QApplication>
 #include <QFile>
@@ -19,6 +17,9 @@
 #include <algorithm>
 
 #include "QHexView/model/buffer/qmemorybuffer.h"
+
+#include "mainwindow.h"
+#include "aboutdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
@@ -177,10 +178,8 @@ void MainWindow::changeLanguage(QAction *action)
 
 void MainWindow::about()
 {
-    QMessageBox::about(this,
-                       tr("About RiffTree"),
-                       tr("RiffTree is a RIFF file structure viewer\n"
-                          "with hex content view"));
+    AboutDialog dlg(this);
+    dlg.exec();
 }
 
 void MainWindow::treeItemClicked(const QModelIndex &index)

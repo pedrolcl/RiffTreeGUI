@@ -9,7 +9,7 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
-  INSTALL_LOCATION: ${{github.workspace}}/RiffTree
+  INSTALL_LOCATION: ${{github.workspace}}/RiffTreeGUI
 
 jobs:
   build:
@@ -64,7 +64,7 @@ jobs:
     - name: '${{ matrix.icon }} Upload Artifacts'
       uses: actions/upload-artifact@v7
       with:
-        name: RiffTree-msvc-${{matrix.arch}}
+        name: RiffTreeGUI-msvc-${{matrix.arch}}
         path: ${{env.INSTALL_LOCATION}}
         retention-days: 90
         overwrite: true
@@ -72,7 +72,7 @@ jobs:
     - name: '${{ matrix.icon }} Upload Installer'
       uses: actions/upload-artifact@v7
       with:
-        name: RiffTree-msvc-installer-${{matrix.arch}}
-        path: ${{github.workspace}}/build/RiffTree-${{steps.configuration.outputs.config_version}}-Windows-*.exe
+        name: RiffTreeGUI-msvc-installer-${{matrix.arch}}
+        path: ${{github.workspace}}/build/RiffTreeGUI-${{steps.configuration.outputs.config_version}}-Windows-*.exe
         retention-days: 90
         overwrite: true

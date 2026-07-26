@@ -10,14 +10,14 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "CompanyName", "io.github.pedrolcl.RiffTree"
+      VALUE "CompanyName", "io.github.pedrolcl.@PROJECT_NAME@"
       VALUE "FileDescription", "Riff File Viewer"
       VALUE "FileVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
       VALUE "Full Version", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.0"
-      VALUE "InternalName", "RiffTree"
+      VALUE "InternalName", "@PROJECT_NAME@"
       VALUE "LegalCopyright", "Copyright \251 2025-2026 Pedro Lopez-Cabanillas. Licensed under the terms of the GPL v3 or later"
-      VALUE "OriginalFilename", "RiffTree.exe"
-      VALUE "ProductName", "RiffTree"
+      VALUE "OriginalFilename", "@PROJECT_NAME@.exe"
+      VALUE "ProductName", "@PROJECT_NAME@"
       VALUE "ProductVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
     END
   END

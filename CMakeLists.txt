@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(RiffTree
+project(RiffTreeGUI
     LANGUAGES CXX
     VERSION 1.0.0
 )
@@ -36,6 +36,8 @@ add_app_translations_resource(APP_RES ${QM_FILES})
 add_qt_translations_resource(QT_RES en es)
 
 add_executable(${PROJECT_NAME}
+    aboutdialog.cpp
+    aboutdialog.h
     main.cpp
     mainwindow.cpp
     mainwindow.h

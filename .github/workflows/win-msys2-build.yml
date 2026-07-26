@@ -9,7 +9,7 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
-  INSTALL_LOCATION: RiffTree
+  INSTALL_LOCATION: RiffTreeGUI
 
 jobs:
   build:
@@ -45,10 +45,10 @@ jobs:
           qt6-tools:p
           qt6-translations:p
 
-    - name: '${{ matrix.icon }} Install NSIS'
-      uses: repolevedavaj/install-nsis@v1.2.1
-      with:
-        nsis-version: '3.11'
+    # - name: '${{ matrix.icon }} Install NSIS'
+    #   uses: repolevedavaj/install-nsis@v1.2.1
+    #   with:
+    #     nsis-version: '3.11'
 
     - name: '${{ matrix.icon }} Checkout'
       uses: actions/checkout@v7
@@ -84,6 +84,6 @@ jobs:
     #   uses: actions/upload-artifact@v7
     #   with:
     #     name: rifftree-installer-${{matrix.sys}}
-    #     path: ${{github.workspace}}/build/RiffTree-${{steps.configuration.outputs.config_version}}-${{matrix.sys}}.exe
+    #     path: ${{github.workspace}}/build/RiffTreeGUI-${{steps.configuration.outputs.config_version}}-${{matrix.sys}}.exe
     #     retention-days: 90
     #     overwrite: true

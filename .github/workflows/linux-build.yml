@@ -36,12 +36,12 @@ jobs:
 
     - name: Install
       env:
-        DESTDIR: ${{github.workspace}}/RiffTree-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
+        DESTDIR: ${{github.workspace}}/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
       run: cmake --install build --config ${{env.BUILD_TYPE}}
 
     - name: Upload Artifacts
       env:
-        INSTALL_LOCATION: RiffTree-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
+        INSTALL_LOCATION: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-x86_64.AppDir
       uses: actions/upload-artifact@v7
       with:
         name: ${{env.INSTALL_LOCATION}}
