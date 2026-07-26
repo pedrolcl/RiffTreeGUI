@@ -1,6 +1,10 @@
 # RiffTreeGUI
 A GUI application to show the tree structure of a [RIFF file](https://en.wikipedia.org/wiki/Resource_Interchange_File_Format).
 
+[![Linux CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/linux-build.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/linux-build.yml)  
+[![Windows MSVC CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msvc-ci.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msvc-ci.yml)  
+[![Windows MSYS2 CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml)   
+
 ![logo](images/RiffTree.png)
 
 This has been possible thanks to the following projects:
