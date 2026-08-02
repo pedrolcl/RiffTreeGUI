@@ -128,9 +128,9 @@ if (UNIX AND NOT APPLE)
              DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps )
     install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.desktop
              DESTINATION ${CMAKE_INSTALL_DATADIR}/applications )
-         install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.metainfo.xml
-                  DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
-                  RENAME io.github.pedrolcl.RiffTreeGUI.metainfo.xml )
+    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.metainfo.xml
+          DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
+          RENAME io.github.pedrolcl.RiffTreeGUI.metainfo.xml )
     message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
     # AppDir symlinks
     if (DEFINED ENV{DESTDIR})
@@ -139,7 +139,7 @@ if (UNIX AND NOT APPLE)
         string(REPLACE "/" "" RELPREF ${CMAKE_INSTALL_PREFIX})
         install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME} $ENV{DESTDIR}/AppRun)")
         install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/applications/${PROJECT_NAME}.desktop $ENV{DESTDIR}/${PROJECT_NAME}.desktop)")
-        install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/${PROJECT_NAME}.png $ENV{DESTDIR}/${PROJECT_NAME}.png)")
+        install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${RELPREF}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/RiffTree.png $ENV{DESTDIR}/RiffTree.png)")
     endif()
 endif()
 

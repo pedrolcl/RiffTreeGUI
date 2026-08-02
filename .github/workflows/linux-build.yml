@@ -46,12 +46,18 @@ jobs:
         DESTDIR: ${{github.workspace}}/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppDir
       run: cmake --install build --config ${{env.BUILD_TYPE}}
 
+    - name: '${{ matrix.icon }} Archive'
+      env:
+        DESTDIR: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppDir
+      run: tar -xvzf ${{env.DESTDIR}}.tar.gz ${{env.DESTDIR}}
+
     - name: '${{ matrix.icon }} Upload Artifacts'
       env:
         INSTALL_LOCATION: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppDir
       uses: actions/upload-artifact@v7
       with:
-        name: ${{env.INSTALL_LOCATION}}-${{matrix.arch}}
-        path: ${{github.workspace}}/${{env.INSTALL_LOCATION}}
+        name: ${{env.INSTALL_LOCATION}}
+        path: ${{github.workspace}}/${{env.INSTALL_LOCATION}}.tar.gz
         retention-days: 90
         overwrite: true
+        archive: false
