@@ -1,11 +1,7 @@
 # RiffTreeGUI
 A GUI application to show the tree structure of a [RIFF file](https://en.wikipedia.org/wiki/Resource_Interchange_File_Format) with hex view.
- 
-[![Linux CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/linux-build.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/linux-build.yml)  
-[![Windows MSVC CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msvc-ci.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msvc-ci.yml)  
-[![Windows MSYS2 CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml)   
 
-![logo](images/RiffTree.png)
+![logo](RiffTree_512x512.png)
 
 This is a Qt5/Qt6 GUI application showing the tree structure of a RIFF file with an hex view. Instead of reading and parsing the whole file (which may be quite large), it is memory mapped and should be very efficient.
 
@@ -30,7 +26,7 @@ This has been possible thanks to the following projects:
 
 ## Screenshot
 
-![Screenshot](docs/screenshot.png)
+![Screenshot](screenshot.png)
 
 ## License
 
