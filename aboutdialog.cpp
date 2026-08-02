@@ -7,14 +7,14 @@
 #include <QObject>
 #include <QPixmap>
 #include <QTabWidget>
-#include <QTextEdit>
+#include <QTextBrowser>
 #include <QVBoxLayout>
 
 #include "aboutdialog.h"
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
     setWindowTitle(tr("About RiffTreeGUI"));
-    resize(420, 300);
+    resize(440, 314);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QTabWidget *tabs = new QTabWidget(this);
@@ -63,7 +63,8 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
 
     QWidget *licenseTab = new QWidget(this);
     QVBoxLayout *licenseLayout = new QVBoxLayout(licenseTab);
-    QLabel *licenseText = new QLabel(tr("<p>Copyright © 2025-2026 Pedro López-Cabanillas</p>"
+    QTextBrowser *licenseText = new QTextBrowser(this);
+    licenseText->setHtml(tr("<p>Copyright © 2025-2026 Pedro López-Cabanillas</p>"
     "<p>This program is free software: you can redistribute it and/or modify "
     "it under the terms of the GNU General Public License as published by "
     "the Free Software Foundation, either version 3 of the License, or "
@@ -76,7 +77,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
     "along with this program. If not, see "
     "<a href='https://www.gnu.org/licenses'>https://www.gnu.org/licenses</a></p>"));
     licenseText->setOpenExternalLinks(true);
-    licenseText->setWordWrap(true);
+    licenseText->setWordWrapMode(QTextOption::WordWrap);
     licenseLayout->addWidget(licenseText);
     tabs->addTab(licenseTab, tr("License"));
 
