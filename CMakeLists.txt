@@ -131,7 +131,6 @@ if (UNIX AND NOT APPLE)
     install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.metainfo.xml
              DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
              RENAME ${PROJECT_NAME}.appdata.xml )
-    message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME} - CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
 if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
@@ -153,19 +152,17 @@ if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
         )
     endif()
     install(SCRIPT ${deploy_script})
-    if (UNIX AND NOT APPLE)
+    if (UNIX AND NOT APPLE AND DEFINED WORKDIR)
         # AppImage
-        string(REPLACE "/" "" RELPREF ${CMAKE_INSTALL_PREFIX})
-        cmake_path(SET WORKDIR NORMALIZE "${CMAKE_SOURCE_DIR}/..")
         install( CODE
-          "include(${CMAKE_SOURCE_DIR}/cmake/appimage.cmake)
-           make_appimage(
-                EXE \"${RELPREF}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}\"
-                ICON \"${RELPREF}/${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps//RiffTree.png\"
-                DESKTOP \"${RELPREF}/${CMAKE_INSTALL_DATADIR}/applications/${PROJECT_NAME}.desktop\"
+          "include(${CMAKE_SOURCE_DIR}/cmake/CreateAppImage.cmake)
+           create_appimage(
+                EXE \"${PROJECT_NAME}\"
+                ICON \"RiffTree.png\"
+                DESKTOP \"${PROJECT_NAME}.desktop\"
                 WORKDIR \"${WORKDIR}\"
-                APPDIR \"${WORKDIR}/${PROJECT_NAME}-v${PROJECT_VERSION}-${CMAKE_SYSTEM_PROCESSOR}.AppDir\"
-                PROCESSOR \"${CMAKE_SYSTEM_PROCESSOR}\"
+                APPDIR \"${PROJECT_NAME}-v${PROJECT_VERSION}-${CMAKE_SYSTEM_PROCESSOR}.AppDir\"
+                ARCH \"${CMAKE_SYSTEM_PROCESSOR}\"
            )"
         )
     endif()

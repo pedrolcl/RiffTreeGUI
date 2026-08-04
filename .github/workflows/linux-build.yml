@@ -16,8 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { icon: '🟥', arch: "x86_64",   os: "ubuntu-24.04" }
-          - { icon: '🟩', arch: "aarch64",  os: "ubuntu-24.04-arm" }
+          - { icon: '🟥', arch: "x86_64",  os: "ubuntu-24.04" }
+          - { icon: '🟩', arch: "aarch64", os: "ubuntu-24.04-arm" }
     runs-on: ${{ matrix.os }}
     name: 🚧${{ matrix.icon }} ${{ matrix.arch }}
 
@@ -38,6 +38,7 @@ jobs:
         -DCMAKE_INSTALL_PREFIX=/usr
         -DCMAKE_INSTALL_LIBDIR=lib
         -DCMAKE_INSTALL_RPATH="\$ORIGIN/../lib"
+        -DWORKDIR=${{github.workspace}}
 
     - name: '${{ matrix.icon }} Build'
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
