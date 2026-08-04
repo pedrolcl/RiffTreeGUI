@@ -16,8 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { icon: '🟥', arch: "x86_64", os: "ubuntu-24.04" }
-          - { icon: '🟩', arch: "arm64",  os: "ubuntu-24.04-arm" }
+          - { icon: '🟥', arch: "x86_64",   os: "ubuntu-24.04" }
+          - { icon: '🟩', arch: "aarch64",  os: "ubuntu-24.04-arm" }
     runs-on: ${{ matrix.os }}
     name: 🚧${{ matrix.icon }} ${{ matrix.arch }}
 
@@ -37,6 +37,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DCMAKE_INSTALL_PREFIX=/usr
         -DCMAKE_INSTALL_LIBDIR=lib
+        -DCMAKE_INSTALL_RPATH="\$ORIGIN/../lib"
 
     - name: '${{ matrix.icon }} Build'
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
@@ -51,13 +52,24 @@ jobs:
         DESTDIR: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppDir
       run: tar -cvzf ${{env.DESTDIR}}.tar.gz ${{env.DESTDIR}}
 
-    - name: '${{ matrix.icon }} Upload Artifacts'
+    - name: '${{ matrix.icon }} Upload Archive'
       env:
         INSTALL_LOCATION: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppDir
       uses: actions/upload-artifact@v7
       with:
         name: ${{env.INSTALL_LOCATION}}
         path: ${{github.workspace}}/${{env.INSTALL_LOCATION}}.tar.gz
+        retention-days: 90
+        overwrite: true
+        archive: false
+
+    - name: '${{ matrix.icon }} Upload AppImage'
+      env:
+        INSTALL_LOCATION: RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-${{matrix.arch}}.AppImage
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{env.INSTALL_LOCATION}}
+        path: ${{github.workspace}}/${{env.INSTALL_LOCATION}}
         retention-days: 90
         overwrite: true
         archive: false
