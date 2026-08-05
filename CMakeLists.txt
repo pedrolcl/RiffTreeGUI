@@ -143,15 +143,18 @@ if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
             NO_TRANSLATIONS
         )
         include ( InstallRequiredSystemLibraries )
-    else()
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         qt_generate_deploy_app_script(
             TARGET ${PROJECT_NAME}
             OUTPUT_SCRIPT deploy_script
+            INCLUDE_PLUGINS xcb wayland
             NO_UNSUPPORTED_PLATFORM_ERROR
             NO_TRANSLATIONS
         )
     endif()
-    install(SCRIPT ${deploy_script})
+    if (DEFINED deploy_script)
+        install(SCRIPT ${deploy_script})
+    endif()
     if (UNIX AND NOT APPLE AND DEFINED WORKDIR)
         # AppImage
         install( CODE

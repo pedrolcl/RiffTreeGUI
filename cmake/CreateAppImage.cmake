@@ -1,4 +1,5 @@
 # Copyright (c) 2026 Pedro López-Cabanillas
+# SPDX-License-Identifier: BSD-3-Clause
 #
 # CREATE_APPIMAGE(EXE <exe> ICON <icon-file-name> DESKTOP <desktop-file-name>
 #                 WORKDIR <workdir> APPDIR <AppDir-name> ARCH <arch>
@@ -15,6 +16,10 @@
 # - DESKTOP is the .desktop filename (expected under usr/share/applications/)
 # - If APPIMAGETOOL_PATH is provided, it will be used instead of downloading.
 # - This function aims to be robust to spaces in paths and to report clear errors.
+# - CMake >= 4.2 has a CPack AppImage generator that may replace this function.
+
+cmake_minimum_required(VERSION 3.16)
+
 function(CREATE_APPIMAGE)
     set(args "EXE;ICON;DESKTOP;WORKDIR;APPDIR;ARCH;APPIMAGETOOL_PATH;APPIMAGETOOL_VERSION")
     cmake_parse_arguments(ARGS "" "${args}" "" ${ARGN})
@@ -25,6 +30,10 @@ function(CREATE_APPIMAGE)
             message(FATAL_ERROR "CREATE_APPIMAGE: missing required argument: ${_req}")
         endif()
     endforeach()
+
+    if(ARGS_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "CREATE_APPIMAGE: provided unparsed arguments ${ARGS_UNPARSED_ARGUMENTS}")
+    endif()
 
     # Validate working directory
     if(NOT IS_DIRECTORY "${ARGS_WORKDIR}")
