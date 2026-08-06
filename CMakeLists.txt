@@ -130,7 +130,7 @@ if (UNIX AND NOT APPLE)
              DESTINATION ${CMAKE_INSTALL_DATADIR}/applications )
     install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.metainfo.xml
              DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
-             RENAME ${PROJECT_NAME}.appdata.xml )
+             RENAME io.github.pedrolcl.${PROJECT_NAME}.appdata.xml )
 endif()
 
 if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
@@ -143,6 +143,13 @@ if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
             NO_TRANSLATIONS
         )
         include ( InstallRequiredSystemLibraries )
+    elseif(WIN32 AND NOT MSVC)
+        qt_generate_deploy_app_script(
+            TARGET ${PROJECT_NAME}
+            OUTPUT_SCRIPT deploy_script
+            NO_UNSUPPORTED_PLATFORM_ERROR
+            NO_TRANSLATIONS
+        )
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         qt_generate_deploy_app_script(
             TARGET ${PROJECT_NAME}

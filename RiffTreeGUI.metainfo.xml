@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <component type="desktop-application">
   <!--Created with jdAppStreamEdit 9.2-->
-  <id>RiffTreeGUI</id>
+  <id>io.github.pedrolcl.RiffTreeGUI</id>
   <name>Riff Tree GUI</name>
   <summary>A GUI application to show the tree structure of a RIFF file</summary>
   <developer id="io.github.pedrolcl">
@@ -15,12 +15,12 @@
   </description>
   <screenshots>
     <screenshot type="default">
-      <caption>main window and about dialog</caption>
-      <image type="source">https://github.com/pedrolcl/RiffTreeGUI/blob/devel/docs/screenshot.png</image>
+      <caption>Main window and About dialog</caption>
+      <image type="source">https://pedrolcl.github.io/RiffTreeGUI/screenshot.png</image>
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.0.0" date="2026-08-02" type="stable"/>
+    <release version="1.0.0" date="2026-08-08" type="stable"/>
   </releases>
   <url type="homepage">https://pedrolcl.github.io/RiffTreeGUI</url>
   <url type="bugtracker">https://github.com/pedrolcl/RiffTreeGUI/issues</url>
