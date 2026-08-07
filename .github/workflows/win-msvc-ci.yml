@@ -73,6 +73,6 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: RiffTreeGUI-msvc-installer-${{matrix.arch}}
-        path: ${{github.workspace}}/build/RiffTreeGUI-${{steps.configuration.outputs.config_version}}-Windows-*.exe
+        path: ${{github.workspace}}/build/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-Windows-*.exe
         retention-days: 90
         overwrite: true
