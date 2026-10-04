@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(RiffTreeGUI
     LANGUAGES CXX
-    VERSION 1.0.0
+    VERSION 1.0.1
 )
 
 set(CMAKE_CXX_STANDARD 14)
@@ -133,7 +133,7 @@ if (UNIX AND NOT APPLE)
              RENAME io.github.pedrolcl.${PROJECT_NAME}.appdata.xml )
 endif()
 
-if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
+if (QT_VERSION VERSION_GREATER_EQUAL 6.3)
     if(MSVC)
         qt_generate_deploy_app_script(
             TARGET ${PROJECT_NAME}
@@ -143,18 +143,18 @@ if (QT_VERSION VERSION_GREATER_EQUAL 6.0)
             NO_TRANSLATIONS
         )
         include ( InstallRequiredSystemLibraries )
-    elseif(WIN32 AND NOT MSVC)
-        qt_generate_deploy_app_script(
-            TARGET ${PROJECT_NAME}
-            OUTPUT_SCRIPT deploy_script
-            NO_UNSUPPORTED_PLATFORM_ERROR
-            NO_TRANSLATIONS
-        )
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         qt_generate_deploy_app_script(
             TARGET ${PROJECT_NAME}
             OUTPUT_SCRIPT deploy_script
             INCLUDE_PLUGINS xcb wayland
+            NO_UNSUPPORTED_PLATFORM_ERROR
+            NO_TRANSLATIONS
+        )
+    else()
+        qt_generate_deploy_app_script(
+            TARGET ${PROJECT_NAME}
+            OUTPUT_SCRIPT deploy_script
             NO_UNSUPPORTED_PLATFORM_ERROR
             NO_TRANSLATIONS
         )
@@ -202,5 +202,9 @@ set ( CPACK_SOURCE_STRIP_FILES OFF )
 # binary packages
 set ( CPACK_PACKAGE_NAME ${PROJECT_NAME} )
 set ( CPACK_STRIP_FILES ON )
+if (APPLE)
+    set(CPACK_GENERATOR "DragNDrop")
+    set(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME} Installer")
+endif()
 
 include ( CPack )
