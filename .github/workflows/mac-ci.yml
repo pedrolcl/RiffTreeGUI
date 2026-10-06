@@ -1,0 +1,57 @@
+name: macOS CI
+
+on:
+  push:
+    branches: [ "devel", "master" ]
+  pull_request:
+    branches: [ "devel", "master" ]
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ["x86_64", "aarch64"]
+        include:
+          - { arch: "x86_64", os: "macos-15-intel"  }
+          - { arch: "aarch64", os: "macos-15" }
+    runs-on: ${{ matrix.os }}
+    name: 'macOS CI ${{ matrix.arch }}'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+    - name: 'Install Qt'
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.8.3'
+        modules: qt5compat
+
+    - name: 'Configure CMake'
+      run: >
+        cmake -B ${{github.workspace}}/build
+        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        -DCMAKE_OSX_DEPLOYMENT_TARGET="12.0"
+        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+        -DCMAKE_INSTALL_RPATH="@executable_path/../Frameworks"
+        -DCMAKE_INSTALL_PREFIX=deploy
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Install
+      run: cmake --install ${{github.workspace}}/build
+
+    - name: 'Upload Artifacts'
+      uses: actions/upload-artifact@v7
+      with:
+        name: RiffTreeGUI-macOS-${{ matrix.arch }}
+        path: ${{github.workspace}}/deploy/RiffTreeGUI.app
+        retention-days: 90
+        overwrite: true
+        archive: true

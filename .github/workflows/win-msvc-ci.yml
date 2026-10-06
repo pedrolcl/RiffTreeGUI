@@ -30,7 +30,7 @@ jobs:
     - name: '${{ matrix.icon }} Install Qt'
       uses: jurplel/install-qt-action@v4
       with:
-        version: '6.10.3' # pin qt version, see: https://github.com/miurahr/aqtinstall/issues/1007
+        version: '6.8.3' # pin qt version, see: https://github.com/miurahr/aqtinstall/issues/1007
         target: 'desktop'
         use-official: true
 
@@ -76,3 +76,4 @@ jobs:
         path: ${{github.workspace}}/build/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-Windows-*.exe
         retention-days: 90
         overwrite: true
+        archive: false

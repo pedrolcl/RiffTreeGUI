@@ -1,4 +1,4 @@
 [submodule "qhexview"]
 	path = qhexview
-	url = git@github.com:pedrolcl/QHexView.git
-	branch = direct_renderer
+	url = git@github.com:Dax89/QHexView.git
+	branch = master
