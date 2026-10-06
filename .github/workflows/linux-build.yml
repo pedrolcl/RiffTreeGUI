@@ -22,14 +22,15 @@ jobs:
     name: 🚧${{ matrix.icon }} ${{ matrix.arch }}
 
     steps:
-    - uses: actions/checkout@v7
+    - name: Checkout
+      uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: '${{ matrix.icon }} Install Qt'
       uses: jurplel/install-qt-action@v4
       with:
-        version: '6.8.3' # pin qt version, see https://github.com/miurahr/aqtinstall/issues/1042
+        version: '6.12.0' # pin qt version, see https://github.com/miurahr/aqtinstall/issues/1042
 
     - name: '${{ matrix.icon }} Configure CMake'
       id: configuration
