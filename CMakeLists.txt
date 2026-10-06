@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 3.19)
 project(RiffTreeGUI
     LANGUAGES CXX
     VERSION 1.0.1
+    DESCRIPTION "A GUI application to show the tree structure of a Riff file with hex view"
+    HOMEPAGE_URL "https://pedrolcl.github.io/RiffTreeGUI/"
 )
 
 set(CMAKE_CXX_STANDARD 14)

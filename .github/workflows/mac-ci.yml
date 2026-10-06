@@ -18,7 +18,7 @@ jobs:
         arch: ["x86_64", "aarch64"]
         include:
           - { arch: "x86_64", os: "macos-15-intel"  }
-          - { arch: "aarch64", os: "macos-15" }
+          - { arch: "arm64", os: "macos-15" }
     runs-on: ${{ matrix.os }}
     name: 'macOS CI ${{ matrix.arch }}'
 
@@ -35,25 +35,26 @@ jobs:
         modules: qt5compat
 
     - name: 'Configure CMake'
+      id: configuration
       run: >
         cmake -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DCMAKE_OSX_DEPLOYMENT_TARGET="12.0"
-        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
         -DCMAKE_INSTALL_RPATH="@executable_path/../Frameworks"
         -DCMAKE_INSTALL_PREFIX=deploy
+        -DCPACK_SYSTEM_NAME=macOS
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Install
-      run: cmake --install ${{github.workspace}}/build
+      run: cmake --build ${{github.workspace}}/build --target package
 
     - name: 'Upload Artifacts'
       uses: actions/upload-artifact@v7
       with:
         name: RiffTreeGUI-macOS-${{ matrix.arch }}
-        path: ${{github.workspace}}/deploy/RiffTreeGUI.app
+        path: ${{github.workspace}}/build/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-Darwin-${{ matrix.arch }}.tar.gz
         retention-days: 90
         overwrite: true
-        archive: true
+        archive: false
