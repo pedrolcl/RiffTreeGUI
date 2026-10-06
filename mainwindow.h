@@ -10,11 +10,13 @@
 #include <QDropEvent>
 #include <QMainWindow>
 #include <QMenu>
+#include <QPointer>
 #include <QSplitter>
 #include <QTranslator>
 #include <QTreeView>
 
 #include "QHexView/qhexview.h"
+#include "recentfileshelper.h"
 #include "treemodel.h"
 
 class MainWindow : public QMainWindow
@@ -46,6 +48,7 @@ private:
     QMenu *fileMenu;
     QMenu *helpMenu;
     QMenu *languageMenu;
+    QMenu *recentFilesMenu;
     QAction *openAct;
     QAction *exitAct;
     QAction *aboutAct;
@@ -58,6 +61,7 @@ private:
 
     TreeModel *m_treemodel{nullptr};
     QHexDocument *m_hexdoc{nullptr};
+    QPointer<RecentFilesHelper> m_recentFiles;
 
     QString m_openFileName;
     QString m_currentLang{"en_US"};

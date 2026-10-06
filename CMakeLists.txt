@@ -1,7 +1,7 @@
 # Copyright (C) 2025-2026 Pedro López-Cabanillas
 # SPDX-License-Identifier:  GPL-3.0-or-later
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
 project(RiffTreeGUI
     LANGUAGES CXX
@@ -41,6 +41,8 @@ add_executable(${PROJECT_NAME}
     main.cpp
     mainwindow.cpp
     mainwindow.h
+    recentfileshelper.cpp
+    recentfileshelper.h
     resources.qrc
     treeitem.cpp
     treeitem.h
@@ -202,9 +204,5 @@ set ( CPACK_SOURCE_STRIP_FILES OFF )
 # binary packages
 set ( CPACK_PACKAGE_NAME ${PROJECT_NAME} )
 set ( CPACK_STRIP_FILES ON )
-if (APPLE)
-    set(CPACK_GENERATOR "DragNDrop")
-    set(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME} Installer")
-endif()
 
 include ( CPack )

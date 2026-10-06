@@ -66,6 +66,9 @@ void MainWindow::openFile(const QString fileName)
             return;
         }
 
+        QFileInfo finfo(fileName);
+        m_recentFiles->setCurrentFile(finfo.absoluteFilePath());
+
         delete m_treemodel;
         m_treemodel = new TreeModel(this);
 
@@ -83,7 +86,7 @@ void MainWindow::openFile(const QString fileName)
             m_treeview->expandAll();
             m_treeview->resizeColumnToContents(0);
 
-            m_openFileName = QFileInfo(fileName).fileName();
+            m_openFileName = finfo.fileName();
             updateWindowTitle();
         } else {
             QMessageBox::warning(this,
@@ -141,6 +144,7 @@ void MainWindow::retranslate()
     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
     findAct->setText(tr("Find..."));
     findAct->setStatusTip(tr("Show the Find dialog"));
+    m_recentFiles->retranslateUi();
 }
 
 void MainWindow::readSettings()
@@ -251,8 +255,14 @@ void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openAct);
+    recentFilesMenu = fileMenu->addMenu(tr("Open &Recent Files"));
+    fileMenu->addMenu(recentFilesMenu);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
+
+    m_recentFiles = new RecentFilesHelper(recentFilesMenu);
+    connect(m_recentFiles, &RecentFilesHelper::selectedFile, this, &MainWindow::openFile);
+    m_recentFiles->updateRecentFileActions();
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(findAct);
