@@ -133,6 +133,7 @@ void MainWindow::retranslate()
     fileMenu->setTitle(tr("&File"));
     editMenu->setTitle(tr("&Edit"));
     helpMenu->setTitle(tr("&Help"));
+    recentFilesMenu->setTitle(tr("Open &Recent Files"));
     languageMenu->setTitle(tr("&Language"));
     openAct->setText(tr("&Open..."));
     openAct->setStatusTip(tr("Open an existing file"));
