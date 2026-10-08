@@ -19,7 +19,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED)
+option(USE_QT5 "Use Qt5 instead of Qt6" OFF)
+option(INSTALL_DEPENDENCIES "Deploy Dependencies (useful to create bundle/installer/AppImage)" OFF)
+
+if (USE_QT5)
+    find_package(QT NAMES Qt5 REQUIRED)
+else()
+    find_package(QT NAMES Qt6 REQUIRED)
+endif()
+
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
 
 set(TS_FILES
@@ -152,7 +160,7 @@ if (UNIX AND NOT APPLE)
              RENAME io.github.pedrolcl.${PROJECT_NAME}.appdata.xml )
 endif()
 
-if (QT_VERSION VERSION_GREATER_EQUAL 6.3)
+if (INSTALL_DEPENDENCIES AND QT_VERSION VERSION_GREATER_EQUAL 6.3)
     if(MSVC)
         qt_generate_deploy_app_script(
             TARGET ${PROJECT_NAME}

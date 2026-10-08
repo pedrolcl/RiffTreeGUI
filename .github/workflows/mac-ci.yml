@@ -41,12 +41,12 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DCMAKE_OSX_DEPLOYMENT_TARGET="12.0"
         -DCMAKE_INSTALL_RPATH="@executable_path/../Frameworks"
-        -DCMAKE_INSTALL_PREFIX=deploy
+        -DINSTALL_DEPENDENCIES=ON
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Install
+    - name: Package
       run: cmake --build ${{github.workspace}}/build --target package
 
     - name: 'Upload Artifacts'
