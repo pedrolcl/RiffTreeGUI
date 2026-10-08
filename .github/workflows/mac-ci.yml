@@ -52,8 +52,8 @@ jobs:
     - name: 'Upload Artifacts'
       uses: actions/upload-artifact@v7
       with:
-        name: RiffTreeGUI-macOS-${{ matrix.arch }}
-        path: ${{github.workspace}}/build/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-Darwin-${{matrix.arch}}.tar.gz
+        name: RiffTreeGUI-macOS-${{matrix.arch}}
+        path: ${{github.workspace}}/build/RiffTreeGUI-v${{steps.configuration.outputs.config_version}}-macOS-${{matrix.arch}}.zip
         retention-days: 90
         overwrite: true
         archive: false

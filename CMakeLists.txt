@@ -97,12 +97,27 @@ if (WIN32)
     target_sources ( ${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc
     )
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE )
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    WIN32_EXECUTABLE TRUE
-    MACOSX_BUNDLE TRUE
-)
+if (APPLE)
+    set(MACOSX_BUNDLE_ICON_FILE "RiffTree.icns")
+    set(APP_ICON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/images/RiffTree.icns")
+    set_source_files_properties( ${APP_ICON_PATH} PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources" )
+    target_sources( ${PROJECT_NAME} PUBLIC ${APP_ICON_PATH} )
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_ICON_FILE ${MACOSX_BUNDLE_ICON_FILE}
+        MACOSX_BUNDLE_GUI_IDENTIFIER "io.github.pedrolcl.RiffTreeGUI"
+        MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_COPYRIGHT "Copyright © 2025-2026 Pedro López-Cabanillas"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    )
+endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
@@ -206,5 +221,14 @@ set ( CPACK_SOURCE_STRIP_FILES OFF )
 # binary packages
 set ( CPACK_PACKAGE_NAME ${PROJECT_NAME} )
 set ( CPACK_STRIP_FILES ON )
+
+if(APPLE)
+    set (CPACK_SYSTEM_NAME "macOS")
+    set (CPACK_PRE_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ThinFrameworks.cmake")
+    set (CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-v${PROJECT_VERSION}-macOS-${CMAKE_SYSTEM_PROCESSOR}")
+    set (CPACK_BINARY_ZIP ON)
+    set (CPACK_BINARY_TGZ OFF)
+    set (CPACK_BINARY_STGZ OFF)
+endif()
 
 include ( CPack )
