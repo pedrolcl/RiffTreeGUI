@@ -3,7 +3,8 @@ A GUI application to show the tree structure of a [RIFF file](https://en.wikiped
  
 [![Linux CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/linux-build.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/linux-build.yml)  
 [![Windows MSVC CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msvc-ci.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msvc-ci.yml)  
-[![Windows MSYS2 CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml)   
+[![Windows MSYS2 CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/win-msys2-build.yml)  
+[![macOS CI](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/mac-ci.yml/badge.svg)](https://github.com/pedrolcl/RiffTreeGUI/actions/workflows/mac-ci.yml)   
 
 ![logo](images/RiffTree.png)
 
